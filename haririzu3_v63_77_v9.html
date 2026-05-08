@@ -1,0 +1,4208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>八理図 | 命式鑑定</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Kaisei+Decol:wght@400;700&family=Shippori+Mincho:wght@400;700&family=Zen+Maru+Gothic:wght@400;700&family=Noto+Emoji&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f4ee;
+  --bg2: #eee8d8;
+  --ink: #2a2118;
+  --gold: #b8860b;
+  --gold-light: #e8c96a;
+  --muted: #7a6e5a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Serif JP', serif;
+  min-height: 100vh;
+}
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: radial-gradient(ellipse at 70% 20%, rgba(184,134,11,0.07) 0%, transparent 60%);
+  pointer-events:none;
+}
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 16px 80px;
+}
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+  animation: fadeDown 0.8s ease;
+}
+.header-sub { font-size:11px; letter-spacing:5px; color:var(--gold); margin-bottom:8px; }
+.header-title {
+  font-family:'Shippori Mincho',serif;
+  font-size: clamp(40px,9vw,60px);
+  letter-spacing:.4em;
+  color: var(--ink);
+  line-height:1;
+}
+.header-desc { margin-top:8px; font-size:12px; color:var(--muted); letter-spacing:3px; }
+
+.form-card {
+  background: white;
+  border: 1px solid rgba(184,134,11,0.25);
+  border-radius: 4px;
+  padding: 28px 24px;
+  margin-bottom: 28px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+  animation: fadeUp 0.8s ease 0.1s both;
+}
+.form-title {
+  font-family:'Shippori Mincho',serif;
+  font-size:13px;
+  letter-spacing:4px;
+  color:var(--gold);
+  text-align:center;
+  margin-bottom:20px;
+}
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.form-group { display:flex; flex-direction:column; gap:6px; }
+label { font-size:10px; letter-spacing:3px; color:var(--muted); }
+input, select {
+  background: var(--bg);
+  border: 1px solid rgba(184,134,11,0.3);
+  border-radius:3px;
+  color:var(--ink);
+  font-family:'Noto Serif JP',serif;
+  font-size:15px;
+  padding:10px 12px;
+  outline:none;
+  transition: border-color 0.3s;
+  width:100%;
+}
+select {
+  -webkit-appearance:none;
+  appearance:none;
+}
+input[type="number"] {
+  -webkit-appearance:auto;
+  appearance:auto;
+}
+input:focus,select:focus { border-color:var(--gold); }
+.btn {
+  display:block; width:100%; margin-top:20px;
+  padding:14px;
+  background: var(--ink);
+  border:none;
+  color: var(--gold-light);
+  font-family:'Shippori Mincho',serif;
+  font-size:14px;
+  letter-spacing:6px;
+  cursor:pointer;
+  transition: all 0.3s;
+  border-radius:2px;
+}
+.btn:hover { background:#3d2f1e; letter-spacing:8px; }
+
+.result { display:none; animation: fadeUp 0.7s ease; }
+.result.show { display:block; }
+
+.result-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:16px;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(184,134,11,0.3);
+}
+.result-name { font-family:'Shippori Mincho',serif; font-size:22px; }
+.result-name span { font-size:14px; color:var(--gold); margin-right:8px; letter-spacing:2px; }
+.result-info { font-size:11px; color:var(--muted); text-align:right; line-height:1.8; }
+
+.top-layout {
+  display:flex;
+  gap:24px;
+  align-items:flex-start;
+}
+.left-col {
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:center;
+}
+.jushi-wrap {
+  margin-top:4px;
+}
+
+.meishiki-wrap { flex-shrink:0; }
+.meishiki-label {
+  font-size:15px; letter-spacing:3px; color:var(--gold);
+  text-align:center; margin-bottom:8px; margin-top:36px;
+}
+.meishiki-grid {
+  display:grid;
+  grid-template-columns: repeat(4, 44px);
+  gap:3px;
+  background: rgba(184,134,11,0.2);
+  border:1px solid rgba(184,134,11,0.35);
+  padding:3px;
+  border-radius:3px;
+}
+.pillar-header {
+  background: var(--ink);
+  color: var(--gold-light);
+  font-family:'Shippori Mincho',serif;
+  font-size:11px;
+  letter-spacing:2px;
+  text-align:center;
+  padding:6px 2px;
+  border-radius:1px;
+}
+.kan-cell, .shi-cell, .zo-cell {
+  width:44px; height:44px;
+  border-radius:50%;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  font-family:'Shippori Mincho',serif;
+  cursor:pointer;
+  transition: transform 0.2s;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2), inset 0 2px 0 rgba(255,255,255,0.4);
+}
+.kan-cell:hover, .shi-cell:hover, .zo-cell:hover { transform:scale(1.10); }
+.cell-sub { cursor:pointer; }
+.cell-char { font-size:18px; line-height:1; color:white; font-family:'Kaisei Decol',serif; text-shadow:-1px -1px 2px rgba(80,80,80,0.8); }
+.cell-sub { font-size:10px; line-height:1; color:white; font-family:'Kaisei Decol',serif; margin-top:2px; text-shadow:-1px -1px 2px rgba(80,80,80,0.8); }
+
+.el-木 { background:linear-gradient(135deg,#4caf50,#2d7a30); color:white; }
+.el-火 { background:linear-gradient(135deg,#f44336,#b71c1c); color:white; }
+.el-土 { background:linear-gradient(135deg,#ff9800,#e65100); color:white; }
+.el-金 { background:linear-gradient(135deg,#9e9e9e,#424242); color:white; }
+.el-水 { background:linear-gradient(135deg,#2196f3,#0d47a1); color:white; }
+
+/* 八理図 天干カラー（個別・グラデーション・白文字） */
+.el-甲 { background:radial-gradient(circle at 30% 30%, rgba(125,224,168,0.6), #0d5c2a); color:white; border:none; }
+.el-乙 { background:radial-gradient(circle at 30% 30%, rgba(223,240,160,0.6), #5a9010); color:white; border:none; }
+.el-丙 { background:radial-gradient(circle at 30% 30%, rgba(255,144,144,0.6), #cc2020); color:white; border:none; }
+.el-丁 { background:radial-gradient(circle at 30% 30%, rgba(255,224,238,0.6), #d06080); color:white; border:none; }
+.el-戊 { background:radial-gradient(circle at 30% 30%, rgba(208,144,112,0.6), #4a2010); color:white; border:none; }
+.el-己 { background:radial-gradient(circle at 30% 30%, rgba(248,208,144,0.6), #a04800); color:white; border:none; }
+.el-庚 { background:radial-gradient(circle at 30% 30%, rgba(255,240,128,0.6), #a07800); color:white; border:none; }
+.el-辛 { background:radial-gradient(circle at 30% 30%, rgba(255,255,240,0.6), #b0a800); color:white; border:none; }
+.el-壬 { background:radial-gradient(circle at 30% 30%, rgba(112,208,255,0.6), #003880); color:white; border:none; }
+.el-癸 { background:radial-gradient(circle at 30% 30%, rgba(240,250,255,0.6), #4090b0); color:white; border:none; }
+
+/* 地支は透明 */
+.el-shi { background:transparent; border:2px solid rgba(180,140,20,0.4); color:white; box-shadow:none; text-shadow:-1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333, 0 0 4px rgba(0,0,0,0.6); }
+.el-empty { background:transparent; border:none; box-shadow:none; }
+
+.jikkan-list { display:none; }
+.jikkan-row {
+  display:flex;
+  align-items:center;
+  gap:3px;
+  font-family:'Shippori Mincho',serif;
+}
+.jikkan-row.separator { margin-left:8px; }
+.jikkan-name { font-size:14px; color:var(--ink); font-family:'Kaisei Decol',serif; }
+.jikkan-icon { font-size:18px; }
+.jikkan-count { font-size:13px; color:var(--muted); }
+
+.bubbles-wrap {
+  position:relative;
+  flex-shrink:0;
+}
+.bubble {
+  border-radius:50%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3);
+  transition: transform 0.2s;
+  cursor:pointer;
+  animation: popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+  flex-shrink:0;
+  overflow:visible;
+  z-index:1;
+}
+.bubble { transition: transform 0.2s; }
+.bubble:hover { z-index:10; transform:scale(1.10); }
+.nenun-bubble { transition: transform 0.2s; }
+.nenun-bubble:not(.empty):hover { transform:scale(1.10); }
+.daun-bubble { transition: transform 0.2s; }
+.daun-bubble:not(.empty):hover { transform:scale(1.10); }
+.bubble-icon { line-height:1; }
+.bubble-char {
+  font-family:'Shippori Mincho',serif;
+  font-weight:700;
+  line-height:1;
+  margin-top:2px;
+}
+.bubble-name { line-height:1; margin-top:2px; }
+.bubble-count {
+  font-weight:700;
+  line-height:1;
+  margin-top:3px;
+}
+.bubble-self {
+  background: white;
+  border: 2px solid var(--gold);
+  color: var(--ink);
+  width:88px; height:88px;
+}
+.bubble-self .bubble-icon { font-size:36px; }
+.bubble-self .bubble-char { font-size:16px; color:var(--ink); }
+
+.bubble-sz-0 { width:56px; height:56px; opacity:0.35; }
+.bubble-sz-1 { width:72px; height:72px; }
+.bubble-sz-2 { width:90px; height:90px; }
+.bubble-sz-3 { width:112px; height:112px; }
+.bubble-sz-4 { width:130px; height:130px; }
+.bubble-sz-0 .bubble-icon { font-size:14px; }
+.bubble-sz-1 .bubble-icon { font-size:18px; }
+.bubble-sz-2 .bubble-icon { font-size:24px; }
+.bubble-sz-3 .bubble-icon { font-size:30px; }
+.bubble-sz-4 .bubble-icon { font-size:36px; }
+.bubble-sz-0 .bubble-char { font-size:14px; }
+.bubble-sz-1 .bubble-char { font-size:18px; }
+.bubble-sz-2 .bubble-char { font-size:22px; }
+.bubble-sz-3 .bubble-char { font-size:26px; }
+.bubble-sz-4 .bubble-char { font-size:30px; }
+.bubble-sz-0 .bubble-name { font-size:13px; }
+.bubble-sz-1 .bubble-name { font-size:14px; }
+.bubble-sz-2 .bubble-name { font-size:16px; }
+.bubble-sz-3 .bubble-name { font-size:17px; }
+.bubble-sz-4 .bubble-name { font-size:18px; }
+.bubble-sz-0 .bubble-count { font-size:11px; }
+.bubble-sz-1 .bubble-count { font-size:13px; }
+.bubble-sz-2 .bubble-count { font-size:15px; }
+.bubble-sz-3 .bubble-count { font-size:18px; }
+.bubble-sz-4 .bubble-count { font-size:20px; }
+
+.card {
+  background:white;
+  border:1px solid rgba(184,134,11,0.2);
+  border-radius:4px;
+  padding:20px;
+  margin-top:20px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.05);
+}
+
+.error-msg {
+  background:#fff3f3;
+  border:1px solid #f44336;
+  border-radius:4px;
+  padding:12px 16px;
+  color:#b71c1c;
+  font-size:13px;
+  margin-top:16px;
+  display:none;
+}
+
+@keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== スマホ用レイアウト ===== */
+/* 絵文字フォント統一 */
+.bubble-icon, .b-icon, .nb-icon {
+  font-family: 'Noto Emoji', sans-serif;
+}
+/* 命式文字は明朝体で統一 */
+.cell-char, .cell-sub {
+  font-family: 'Shippori Mincho', serif;
+}
+
+@media (max-width: 600px) {
+  body { font-size: 14px; overflow-x: hidden; }
+
+  .card { padding: 12px; }
+
+  /* 入力フォーム */
+  .form-card { padding: 16px; }
+  .form-grid { grid-template-columns: 1fr; }
+  input[type="number"], input[type="time"], select {
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .submit-btn { width: 100%; font-size: 16px; padding: 14px; }
+
+  /* 時刻入力をスマホで収める */
+  .form-group { width: 100%; box-sizing: border-box; }
+  input[type="time"]#birthtime { width: 100%; box-sizing: border-box; }
+  #time-unknown-label { width: 100%; box-sizing: border-box; }
+
+  /* 命式・季節図をバブル図と幅・中心合わせ */
+  .left-col {
+    width: 100%;
+    align-items: center;
+  }
+  .meishiki-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  .jushi-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* メインレイアウト：縦一列 */
+  .top-layout {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* バブル図を最初に */
+  .bubbles-wrap { order: -1; width:100% !important; }
+  .left-col { order: 1; }
+
+  /* バブル図サイズ調整・縮小 */
+  .bubbles-wrap {
+    width: 100% !important;
+    display: flex;
+    justify-content: center;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    overflow: hidden;
+    max-width: 100vw;
+  }
+  #bubbles-wrap {
+    width: 508px !important;
+    margin-left: calc(50% - 254px) !important;
+    margin-top: -28px !important;
+    margin-bottom: -60px !important;
+    overflow: visible;
+    display: block;
+    transform: scale(0.84);
+    transform-origin: top center;
+  }
+
+  /* 命式グリッド（3割大きく） */
+  .meishiki-grid {
+    grid-template-columns: repeat(4, 52px);
+  }
+  .kan-cell, .shi-cell, .zo-cell {
+    width: 52px; height: 52px;
+  }
+  .cell-char { font-size: 22px; }
+
+  /* 季節図 */
+  .jushi-wrap svg { width: 319px; height: 319px; }
+
+  /* 大運・年運 */
+  .daun-section { max-width: 100% !important; }
+  .nenun-section { max-width: 100% !important; }
+  .nenun-bubble { width: 38px !important; height: 38px !important; }
+  .nenun-bubble .nb-icon { font-size: 24px !important; }
+  .nenun-bubble .nb-name { font-size: 10px !important; }
+  .nenun-row { padding: 6px 6px !important; gap: 4px !important; }
+  .nenun-year-label { min-width: 32px !important; font-size: 13px !important; }
+  .nenun-icons { gap: 4px !important; }
+  .daun-row { flex-wrap: wrap; gap: 4px; }
+  .daun-age { min-width: 80px; font-size: 11px; }
+  .daun-bubble { width: 38px; height: 38px; }
+  .daun-bubble .b-icon { font-size: 14px; }
+  .daun-bubble .b-name { font-size: 7px; }
+
+  /* ヘッダー */
+  .header-title { font-size: 28px; }
+  .header-sub { font-size: 18px; }
+}
+
+/* 大運セクション */
+.daun-section {
+  margin-top: 32px;
+  padding: 20px;
+  background: white;
+  border: 1px solid rgba(184,134,11,0.2);
+  border-radius: 4px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  min-width: 0;
+  max-width: 70%;
+}
+.nenun-section {
+  margin-top: 16px;
+  padding: 16px 20px;
+  background: white;
+  border: 1px solid rgba(184,134,11,0.2);
+  border-radius: 4px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  max-width: fit-content;
+}
+.nenun-title {
+  font-family:'Shippori Mincho',serif;
+  font-size: 14px;
+  letter-spacing: 4px;
+  color: var(--gold);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.nenun-scroll {
+  height: 570px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+.nenun-scroll::-webkit-scrollbar { width: 4px; }
+.nenun-scroll::-webkit-scrollbar-track { background: var(--bg); }
+.nenun-scroll::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+.nenun-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  margin-bottom: 3px;
+  min-height: 62px;
+}
+.nenun-row.current-year {
+  background: rgba(184,134,11,0.20);
+  border: 2px solid rgba(184,134,11,0.6);
+}
+.nenun-year-label {
+  font-family:'Kaisei Decol',serif;
+  font-size: 12px;
+  color: var(--ink);
+  min-width: 38px;
+  text-align: left;
+  font-weight: bold;
+}
+.nenun-icons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.nenun-bubble {
+  width: 47px; height: 47px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+.nenun-bubble .nb-icon { font-size: 33px; line-height: 1; }
+.nenun-bubble .nb-name { font-size: 13px; font-family:'Kaisei Decol',serif; color:white;
+  text-shadow:-1px -1px 2px rgba(0,0,0,0.6); white-space:nowrap; }
+.nenun-bubble.empty { background:transparent; box-shadow:none; }
+.nenun-bubble.kan-sq { border-radius: 6px; }
+.daun-bubble.kan-sq { border-radius: 8px; }
+.daun-comment {
+  flex: 1;
+  padding: 0 8px;
+  min-width: 80px;
+}
+.nenun-kanshi {
+  font-family:'Shippori Mincho',serif;
+  font-size: 13px;
+  color: var(--ink);
+  margin-left: 2px;
+}
+.daun-title {
+  font-family:'Shippori Mincho',serif;
+  font-size: 16px;
+  letter-spacing: 4px;
+  color: var(--gold);
+  margin-bottom: 16px;
+  text-align: center;
+}
+.daun-info {
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 20px;
+  font-family:'Kaisei Decol',serif;
+}
+.daun-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.daun-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  background: var(--bg);
+  border: 1px solid rgba(184,134,11,0.1);
+}
+.daun-row.current {
+  background: rgba(184,134,11,0.18);
+  border: 2px solid rgba(184,134,11,0.6);
+}
+.daun-age {
+  font-family:'Kaisei Decol',serif;
+  font-size: 13px;
+  color: var(--ink);
+  min-width: 100px;
+}
+.daun-icons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.daun-bubble {
+  width: 55px; height: 55px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2), inset 0 2px 0 rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+.daun-bubble .b-icon { font-size: 28px; line-height: 1; }
+.daun-bubble .b-name { font-size: 14px; font-family:'Kaisei Decol',serif; color:white; 
+  text-shadow:-1px -1px 2px rgba(0,0,0,0.6); }
+.daun-bubble.empty {
+  background: transparent;
+  box-shadow: none;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes popIn { from{opacity:0;transform:scale(0.3)} to{opacity:1;transform:scale(1)} }
+
+#bubble-name-label, #level-label {
+  transition: transform 0.2s;
+}
+#bubble-name-label:hover, #level-label:hover { transform: scale(1.10); }
+
+@media(min-width:601px){
+  #bubble-name-label { margin-left:-59px; }
+  #level-label { margin-left:-59px; }
+}
+@media(max-width:560px){
+  .top-layout { flex-direction:column; }
+  .meishiki-grid { grid-template-columns:repeat(4,63px); }
+  .kan-cell,.shi-cell,.zo-cell { width:63px;height:63px; }
+  .cell-char { font-size:22px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="header">
+  <p class="header-sub">自己理解の羅針盤</p>
+  <h1 class="header-title">八理図</h1>
+  <p class="header-desc">— 自分の素材の力が詳しく理解できる —</p>
+</header>
+
+<div class="form-card">
+  <p class="form-title">◈ 生年月日・時刻・都道府県を入力 ◈</p>
+  <div class="form-row">
+    <div class="form-group">
+      <label>お名前</label>
+      <input type="text" id="name" placeholder="">
+    </div>
+    <div class="form-group">
+      <label>性別</label>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <select id="gender" style="flex:1;">
+          <option value="female">女性</option>
+          <option value="male">男性</option>
+        </select>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <button type="button" onclick="stepSelect('gender',-1)" style="width:28px;height:22px;background:var(--bg);border:1px solid rgba(184,134,11,0.3);border-radius:3px;cursor:pointer;font-size:10px;color:var(--ink);">▲</button>
+          <button type="button" onclick="stepSelect('gender',1)" style="width:28px;height:22px;background:var(--bg);border:1px solid rgba(184,134,11,0.3);border-radius:3px;cursor:pointer;font-size:10px;color:var(--ink);">▼</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group" style="grid-column:1/-1">
+      <label>生年月日</label>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <select id="birth-y" style="background:var(--bg);border:1px solid rgba(184,134,11,0.3);border-radius:3px;color:var(--ink);font-family:Noto Serif JP,serif;font-size:15px;padding:10px 8px;outline:none;width:90px;">
+          <option value="">年</option>
+          <option value="1926">1926</option>
+          <option value="1927">1927</option>
+          <option value="1928">1928</option>
+          <option value="1929">1929</option>
+          <option value="1930">1930</option>
+          <option value="1931">1931</option>
+          <option value="1932">1932</option>
+          <option value="1933">1933</option>
+          <option value="1934">1934</option>
+          <option value="1935">1935</option>
+          <option value="1936">1936</option>
+          <option value="1937">1937</option>
+          <option value="1938">1938</option>
+          <option value="1939">1939</option>
+          <option value="1940">1940</option>
+          <option value="1941">1941</option>
+          <option value="1942">1942</option>
+          <option value="1943">1943</option>
+          <option value="1944">1944</option>
+          <option value="1945">1945</option>
+          <option value="1946">1946</option>
+          <option value="1947">1947</option>
+          <option value="1948">1948</option>
+          <option value="1949">1949</option>
+          <option value="1950">1950</option>
+          <option value="1951">1951</option>
+          <option value="1952">1952</option>
+          <option value="1953">1953</option>
+          <option value="1954">1954</option>
+          <option value="1955">1955</option>
+          <option value="1956">1956</option>
+          <option value="1957">1957</option>
+          <option value="1958">1958</option>
+          <option value="1959">1959</option>
+          <option value="1960">1960</option>
+          <option value="1961">1961</option>
+          <option value="1962">1962</option>
+          <option value="1963">1963</option>
+          <option value="1964">1964</option>
+          <option value="1965">1965</option>
+          <option value="1966">1966</option>
+          <option value="1967">1967</option>
+          <option value="1968">1968</option>
+          <option value="1969">1969</option>
+          <option value="1970">1970</option>
+          <option value="1971">1971</option>
+          <option value="1972">1972</option>
+          <option value="1973">1973</option>
+          <option value="1974">1974</option>
+          <option value="1975">1975</option>
+          <option value="1976">1976</option>
+          <option value="1977">1977</option>
+          <option value="1978">1978</option>
+          <option value="1979">1979</option>
+          <option value="1980" id="year-1980">1980</option>
+          <option value="1981">1981</option>
+          <option value="1982">1982</option>
+          <option value="1983">1983</option>
+          <option value="1984">1984</option>
+          <option value="1985">1985</option>
+          <option value="1986">1986</option>
+          <option value="1987">1987</option>
+          <option value="1988">1988</option>
+          <option value="1989">1989</option>
+          <option value="1990">1990</option>
+          <option value="1991">1991</option>
+          <option value="1992">1992</option>
+          <option value="1993">1993</option>
+          <option value="1994">1994</option>
+          <option value="1995">1995</option>
+          <option value="1996">1996</option>
+          <option value="1997">1997</option>
+          <option value="1998">1998</option>
+          <option value="1999">1999</option>
+          <option value="2000">2000</option>
+          <option value="2001">2001</option>
+          <option value="2002">2002</option>
+          <option value="2003">2003</option>
+          <option value="2004">2004</option>
+          <option value="2005">2005</option>
+          <option value="2006">2006</option>
+          <option value="2007">2007</option>
+          <option value="2008">2008</option>
+          <option value="2009">2009</option>
+          <option value="2010">2010</option>
+          <option value="2011">2011</option>
+          <option value="2012">2012</option>
+          <option value="2013">2013</option>
+          <option value="2014">2014</option>
+          <option value="2015">2015</option>
+          <option value="2016">2016</option>
+          <option value="2017">2017</option>
+          <option value="2018">2018</option>
+          <option value="2019">2019</option>
+          <option value="2020">2020</option>
+          <option value="2021">2021</option>
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+          <option value="2029">2029</option>
+          <option value="2030">2030</option>
+          <option value="2031">2031</option>
+          <option value="2032">2032</option>
+          <option value="2033">2033</option>
+          <option value="2034">2034</option>
+          <option value="2035">2035</option>
+          <option value="2036">2036</option>
+          <option value="2037">2037</option>
+          <option value="2038">2038</option>
+          <option value="2039">2039</option>
+          <option value="2040">2040</option>
+          <option value="2041">2041</option>
+          <option value="2042">2042</option>
+          <option value="2043">2043</option>
+          <option value="2044">2044</option>
+          <option value="2045">2045</option>
+          <option value="2046">2046</option>
+          <option value="2047">2047</option>
+          <option value="2048">2048</option>
+          <option value="2049">2049</option>
+          <option value="2050">2050</option>
+          <option value="2051">2051</option>
+          <option value="2052">2052</option>
+          <option value="2053">2053</option>
+          <option value="2054">2054</option>
+          <option value="2055">2055</option>
+          <option value="2056">2056</option>
+          <option value="2057">2057</option>
+          <option value="2058">2058</option>
+          <option value="2059">2059</option>
+          <option value="2060">2060</option>
+          <option value="2061">2061</option>
+          <option value="2062">2062</option>
+          <option value="2063">2063</option>
+          <option value="2064">2064</option>
+          <option value="2065">2065</option>
+          <option value="2066">2066</option>
+          <option value="2067">2067</option>
+          <option value="2068">2068</option>
+          <option value="2069">2069</option>
+          <option value="2070">2070</option>
+          <option value="2071">2071</option>
+          <option value="2072">2072</option>
+          <option value="2073">2073</option>
+          <option value="2074">2074</option>
+          <option value="2075">2075</option>
+          <option value="2076">2076</option>
+          <option value="2077">2077</option>
+          <option value="2078">2078</option>
+          <option value="2079">2079</option>
+          <option value="2080">2080</option>
+          <option value="2081">2081</option>
+          <option value="2082">2082</option>
+          <option value="2083">2083</option>
+          <option value="2084">2084</option>
+          <option value="2085">2085</option>
+          <option value="2086">2086</option>
+          <option value="2087">2087</option>
+          <option value="2088">2088</option>
+          <option value="2089">2089</option>
+          <option value="2090">2090</option>
+          <option value="2091">2091</option>
+          <option value="2092">2092</option>
+          <option value="2093">2093</option>
+          <option value="2094">2094</option>
+          <option value="2095">2095</option>
+          <option value="2096">2096</option>
+          <option value="2097">2097</option>
+          <option value="2098">2098</option>
+          <option value="2099">2099</option>
+          <option value="2100">2100</option>
+        </select>
+        <span style="color:var(--muted);font-size:13px;">年</span>
+        <select id="birth-m" style="background:var(--bg);border:1px solid rgba(184,134,11,0.3);border-radius:3px;color:var(--ink);font-family:Noto Serif JP,serif;font-size:15px;padding:10px 8px;outline:none;width:66px;">
+          <option value="">月</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+        </select>
+        <span style="color:var(--muted);font-size:13px;">月</span>
+        <select id="birth-d" style="background:var(--bg);border:1px solid rgba(184,134,11,0.3);border-radius:3px;color:var(--ink);font-family:Noto Serif JP,serif;font-size:15px;padding:10px 8px;outline:none;width:66px;">
+          <option value="">日</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="16">16</option>
+          <option value="17">17</option>
+          <option value="18">18</option>
+          <option value="19">19</option>
+          <option value="20">20</option>
+          <option value="21">21</option>
+          <option value="22">22</option>
+          <option value="23">23</option>
+          <option value="24">24</option>
+          <option value="25">25</option>
+          <option value="26">26</option>
+          <option value="27">27</option>
+          <option value="28">28</option>
+          <option value="29">29</option>
+          <option value="30">30</option>
+          <option value="31">31</option>
+        </select>
+        <span style="color:var(--muted);font-size:13px;">日</span>
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group" style="grid-column:1/-1">
+      <label>生まれた時刻</label>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <select id="birth-h" style="background:var(--bg);border:1px solid rgba(184,134,11,0.3);border-radius:3px;color:var(--ink);font-family:Noto Serif JP,serif;font-size:15px;padding:10px 8px;outline:none;width:76px;">
+            <option value="">時</option>
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="16">16</option>
+          <option value="17">17</option>
+          <option value="18">18</option>
+          <option value="19">19</option>
+          <option value="20">20</option>
+          <option value="21">21</option>
+          <option value="22">22</option>
+          <option value="23">23</option>
+          </select>
+          <span style="color:var(--muted);font-size:13px;">時</span>
+          <select id="birth-min" style="background:var(--bg);border:1px solid rgba(184,134,11,0.3);border-radius:3px;color:var(--ink);font-family:Noto Serif JP,serif;font-size:15px;padding:10px 8px;outline:none;width:76px;">
+            <option value="">分</option>
+          <option value="0">00</option>
+          <option value="1">01</option>
+          <option value="2">02</option>
+          <option value="3">03</option>
+          <option value="4">04</option>
+          <option value="5">05</option>
+          <option value="6">06</option>
+          <option value="7">07</option>
+          <option value="8">08</option>
+          <option value="9">09</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="16">16</option>
+          <option value="17">17</option>
+          <option value="18">18</option>
+          <option value="19">19</option>
+          <option value="20">20</option>
+          <option value="21">21</option>
+          <option value="22">22</option>
+          <option value="23">23</option>
+          <option value="24">24</option>
+          <option value="25">25</option>
+          <option value="26">26</option>
+          <option value="27">27</option>
+          <option value="28">28</option>
+          <option value="29">29</option>
+          <option value="30">30</option>
+          <option value="31">31</option>
+          <option value="32">32</option>
+          <option value="33">33</option>
+          <option value="34">34</option>
+          <option value="35">35</option>
+          <option value="36">36</option>
+          <option value="37">37</option>
+          <option value="38">38</option>
+          <option value="39">39</option>
+          <option value="40">40</option>
+          <option value="41">41</option>
+          <option value="42">42</option>
+          <option value="43">43</option>
+          <option value="44">44</option>
+          <option value="45">45</option>
+          <option value="46">46</option>
+          <option value="47">47</option>
+          <option value="48">48</option>
+          <option value="49">49</option>
+          <option value="50">50</option>
+          <option value="51">51</option>
+          <option value="52">52</option>
+          <option value="53">53</option>
+          <option value="54">54</option>
+          <option value="55">55</option>
+          <option value="56">56</option>
+          <option value="57">57</option>
+          <option value="58">58</option>
+          <option value="59">59</option>
+          </select>
+          <span style="color:var(--muted);font-size:13px;">分</span>
+        </div>
+        <label id="time-unknown-label" style="display:flex;flex-direction:column;gap:4px;cursor:pointer;
+          padding:8px 12px;border-radius:6px;border:1px solid rgba(184,134,11,0.3);
+          background:var(--bg);font-family:Kaisei Decol,serif;font-size:12px;
+          color:var(--muted);letter-spacing:1px;user-select:none;">
+          <div style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="time-unknown" onchange="toggleTime(this)"
+            style="width:18px;height:18px;cursor:pointer;accent-color:var(--gold);flex-shrink:0;">時刻不明</div>
+          <span style="font-size:11px;color:#c0392b;">（注；結果が大きく変わる場合があります）</span>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group" style="grid-column:1/-1">
+      <label>生まれた都道府県<br><span style="font-size:11px;color:#c0392b;">（注；選択なしは結果が変わる場合があります）</span></label>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <select id="prefecture" title="例：東京都" style="flex:1;">
+        <option value="135.0">選択してください（選択なし）</option>
+        <option value="141.3">北海道（札幌）</option>
+        <option value="141.2">青森県</option>
+        <option value="141.1">岩手県</option>
+        <option value="140.9">宮城県</option>
+        <option value="140.1">秋田県</option>
+        <option value="140.4">山形県</option>
+        <option value="140.5">福島県</option>
+        <option value="140.5">茨城県</option>
+        <option value="139.9">栃木県</option>
+        <option value="139.1">群馬県</option>
+        <option value="139.6">埼玉県</option>
+        <option value="140.1">千葉県</option>
+        <option value="139.7">東京都</option>
+        <option value="139.6">神奈川県</option>
+        <option value="138.3">新潟県</option>
+        <option value="137.0">富山県</option>
+        <option value="136.6">石川県</option>
+        <option value="136.2">福井県</option>
+        <option value="138.6">山梨県</option>
+        <option value="138.2">長野県</option>
+        <option value="136.7">岐阜県</option>
+        <option value="138.4">静岡県</option>
+        <option value="136.9">愛知県</option>
+        <option value="136.5">三重県</option>
+        <option value="136.2">滋賀県</option>
+        <option value="135.8">京都府</option>
+        <option value="135.5">大阪府</option>
+        <option value="135.2">兵庫県</option>
+        <option value="135.8">奈良県</option>
+        <option value="135.2">和歌山県</option>
+        <option value="134.2">鳥取県</option>
+        <option value="133.1">島根県</option>
+        <option value="133.9">岡山県</option>
+        <option value="132.5">広島県</option>
+        <option value="131.5">山口県</option>
+        <option value="134.6">徳島県</option>
+        <option value="134.0">香川県</option>
+        <option value="132.8">愛媛県</option>
+        <option value="133.6">高知県</option>
+        <option value="130.4">福岡県</option>
+        <option value="130.3">佐賀県</option>
+        <option value="129.9">長崎県</option>
+        <option value="130.7">熊本県</option>
+        <option value="131.6">大分県</option>
+        <option value="131.4">宮崎県</option>
+        <option value="130.5">鹿児島県</option>
+        <option value="127.7">沖縄県</option>
+        </select>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <button type="button" onclick="stepSelect('prefecture',-1)" style="width:28px;height:22px;background:var(--bg);border:1px solid rgba(184,134,11,0.3);border-radius:3px;cursor:pointer;font-size:10px;color:var(--ink);">▲</button>
+          <button type="button" 
+            onclick="stepSelect('prefecture',1)"
+            onmousedown="startStep('prefecture',1)"
+            onmouseup="stopStep()"
+            onmouseleave="stopStep()"
+            ontouchstart="startStep('prefecture',1)"
+            ontouchend="stopStep()"
+            style="width:28px;height:22px;background:var(--bg);border:1px solid rgba(184,134,11,0.3);border-radius:3px;cursor:pointer;font-size:10px;color:var(--ink);">▼</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="error-msg" id="error-msg"></div>
+  <button class="btn" onclick="calculate()">命 式 を 鑑 定 す る</button>
+</div>
+
+<div class="result" id="result">
+  <div class="result-header">
+    <div class="result-name"><span>◈</span><span id="disp-name">—</span></div>
+    <div class="result-info" id="disp-info"></div>
+  </div>
+  <div class="card">
+    <div class="top-layout">
+      <div class="left-col">
+        <div class="meishiki-wrap">
+          <p class="meishiki-label">◈ 命 式 ◈</p>
+          <div class="meishiki-grid" id="meishiki-grid"></div>
+        </div>
+        <div class="jushi-wrap">
+          <p style="text-align:center;font-family:Shippori Mincho,serif;font-size:15px;color:var(--gold);letter-spacing:3px;margin:20px auto 4px auto;width:100%;">◈ 季 節 図 ◈</p>
+          <svg id="jushi-svg" viewBox="0 0 220 220" width="220" height="220"></svg>
+        </div>
+      </div>
+      <div style="width:100%;">
+        <p id="name-label" style="text-align:left;font-family:Shippori Mincho,serif;font-size:15px;color:var(--gold);letter-spacing:3px;margin-bottom:4px;">◈ あなた 様 ◈</p>
+        <p id="bubble-name-label" onclick="openHaririzu()" style="text-align:center;font-family:Shippori Mincho,serif;font-size:20px;color:var(--gold);letter-spacing:3px;margin-bottom:46px;cursor:pointer;">◈ 八理図 ◈</p>
+        <div style="position:relative;">
+          <div class="bubbles-wrap" id="bubbles-wrap"></div>
+          <div style="text-align:center;margin-top:-42px;">
+            <p id="level-label" onclick="openLevelModal()" style="font-family:Shippori Mincho,serif;font-size:20px;color:var(--gold);letter-spacing:3px;margin-bottom:4px;cursor:pointer;position:relative;z-index:100;">◈ レベル ◈</p>
+            <p onclick="openLevelModal()" style="font-family:Kaisei Decol,serif;font-size:13px;color:var(--muted);margin-bottom:8px;cursor:pointer;position:relative;z-index:100;text-align:center;margin-left:-59px;">レベルの説明は👆文字をタップ</p>
+          </div>
+          <div style="text-align:center;opacity:0.7;pointer-events:none;margin-top:4px;">
+            <span style="font-size:25px;">💡</span>
+            <span style="font-family:Kaisei Decol,serif;font-size:15px;color:var(--ink);">気になる文字をタップすると説明が見れます</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="daun-section" id="daun-section"></div>
+    <div class="nenun-section" id="nenun-section"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// 時刻不明チェックボックスの切り替え
+let stepTimer = null;
+let stepInterval = null;
+
+function startStep(id, dir) {
+  stepSelect(id, dir);
+  stepTimer = setTimeout(() => {
+    stepInterval = setInterval(() => stepSelect(id, dir), 80);
+  }, 400);
+}
+
+function stopStep() {
+  clearTimeout(stepTimer);
+  clearInterval(stepInterval);
+}
+
+function stepSelect(id, dir) {
+  const sel = document.getElementById(id);
+  const newIdx = sel.selectedIndex + dir;
+  if (newIdx >= 0 && newIdx < sel.options.length) {
+    sel.selectedIndex = newIdx;
+  }
+}
+
+function toggleTime(cb) {
+  const hInput = document.getElementById('birth-h');
+  const mInput = document.getElementById('birth-min');
+  hInput.disabled = cb.checked;
+  mInput.disabled = cb.checked;
+  hInput.style.opacity = cb.checked ? '0.4' : '1';
+  mInput.style.opacity = cb.checked ? '0.4' : '1';
+}
+
+// Enterキーで次のフィールドへ進む
+document.addEventListener('DOMContentLoaded', function() {
+  // 年のデフォルトを1980に設定
+  const yearSel = document.getElementById('birth-y');
+  if (yearSel) yearSel.value = '1980';
+
+  const order = ['name', 'gender', 'birth-y', 'birth-m', 'birth-d', 'birth-h', 'birth-min', 'prefecture'];
+  order.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (i < order.length - 1) {
+          const next = document.getElementById(order[i + 1]);
+          if (next) next.focus();
+        } else {
+          // 都道府県でEnter→鑑定実行
+          calculate();
+        }
+      }
+    });
+  });
+});
+
+// ===== 八理図SVGアイコン =====
+const KAN_SVG = {
+  '畑': `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+  <defs><clipPath id="hdc"><path d="M105,38 Q150,57 192,82 Q148,107 95,126 Q52,107 8,82 Q52,57 105,38 Z"/></clipPath></defs>
+  <path d="M105,38 Q150,57 192,82 Q148,107 95,126 Q52,107 8,82 Q52,57 105,38 Z" fill="#b8720a"/>
+  <g clip-path="url(#hdc)">
+    <line x1="16" y1="89" x2="112" y2="45" stroke="#d4940c" stroke-width="5" stroke-linecap="round"/>
+    <line x1="33" y1="102" x2="129" y2="58" stroke="#d4940c" stroke-width="5" stroke-linecap="round"/>
+    <line x1="51" y1="113" x2="147" y2="69" stroke="#d4940c" stroke-width="5" stroke-linecap="round"/>
+    <line x1="69" y1="123" x2="165" y2="79" stroke="#d4940c" stroke-width="5" stroke-linecap="round"/>
+    <line x1="25" y1="96" x2="121" y2="52" stroke="#7a4500" stroke-width="7" stroke-linecap="round"/>
+    <line x1="42" y1="108" x2="138" y2="64" stroke="#7a4500" stroke-width="7" stroke-linecap="round"/>
+    <line x1="60" y1="118" x2="156" y2="74" stroke="#7a4500" stroke-width="7" stroke-linecap="round"/>
+    <line x1="78" y1="128" x2="174" y2="84" stroke="#7a4500" stroke-width="7" stroke-linecap="round"/>
+    <ellipse cx="37" cy="81" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,37,81)"/>
+    <ellipse cx="35" cy="79" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,35,79)"/>
+    <ellipse cx="40" cy="79" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,40,79)"/>
+    <ellipse cx="54" cy="72" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,54,72)"/>
+    <ellipse cx="52" cy="70" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,52,70)"/>
+    <ellipse cx="57" cy="70" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,57,70)"/>
+    <ellipse cx="71" cy="63" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,71,63)"/>
+    <ellipse cx="69" cy="61" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,69,61)"/>
+    <ellipse cx="74" cy="61" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,74,61)"/>
+    <ellipse cx="88" cy="54" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,88,54)"/>
+    <ellipse cx="86" cy="52" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,86,52)"/>
+    <ellipse cx="91" cy="52" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,91,52)"/>
+    <ellipse cx="54" cy="93" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,54,93)"/>
+    <ellipse cx="52" cy="91" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,52,91)"/>
+    <ellipse cx="57" cy="91" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,57,91)"/>
+    <ellipse cx="71" cy="84" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,71,84)"/>
+    <ellipse cx="69" cy="82" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,69,82)"/>
+    <ellipse cx="74" cy="82" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,74,82)"/>
+    <ellipse cx="88" cy="75" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,88,75)"/>
+    <ellipse cx="86" cy="73" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,86,73)"/>
+    <ellipse cx="91" cy="73" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,91,73)"/>
+    <ellipse cx="105" cy="66" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,105,66)"/>
+    <ellipse cx="103" cy="64" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,103,64)"/>
+    <ellipse cx="108" cy="64" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,108,64)"/>
+    <ellipse cx="72" cy="103" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,72,103)"/>
+    <ellipse cx="70" cy="101" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,70,101)"/>
+    <ellipse cx="75" cy="101" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,75,101)"/>
+    <ellipse cx="89" cy="94" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,89,94)"/>
+    <ellipse cx="87" cy="92" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,87,92)"/>
+    <ellipse cx="92" cy="92" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,92,92)"/>
+    <ellipse cx="106" cy="85" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,106,85)"/>
+    <ellipse cx="104" cy="83" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,104,83)"/>
+    <ellipse cx="109" cy="83" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,109,83)"/>
+    <ellipse cx="123" cy="76" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,123,76)"/>
+    <ellipse cx="121" cy="74" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,121,74)"/>
+    <ellipse cx="126" cy="74" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,126,74)"/>
+    <ellipse cx="90" cy="113" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,90,113)"/>
+    <ellipse cx="88" cy="111" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,88,111)"/>
+    <ellipse cx="93" cy="111" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,93,111)"/>
+    <ellipse cx="107" cy="104" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,107,104)"/>
+    <ellipse cx="105" cy="102" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,105,102)"/>
+    <ellipse cx="110" cy="102" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,110,102)"/>
+    <ellipse cx="124" cy="95" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,124,95)"/>
+    <ellipse cx="122" cy="93" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,122,93)"/>
+    <ellipse cx="127" cy="93" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,127,93)"/>
+    <ellipse cx="141" cy="86" rx="6" ry="3" fill="#5a3000" opacity="0.5" transform="rotate(-30,141,86)"/>
+    <ellipse cx="139" cy="84" rx="5" ry="2.5" fill="#9acd32" transform="rotate(-50,139,84)"/>
+    <ellipse cx="144" cy="84" rx="5" ry="2.5" fill="#7ab820" transform="rotate(-10,144,84)"/>
+  </g>
+  <path d="M105,38 Q150,57 192,82 Q148,107 95,126 Q52,107 8,82 Q52,57 105,38 Z" fill="#e8a020" opacity="0.10"/>
+</svg>`,
+  '木': `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" width="90%" height="90%"><polygon points="20,4 32,20 26,20 30,36 10,36 14,20 8,20" fill="#3eb370" stroke="#1a5c28" stroke-width="1"/><rect x="17" y="28" width="6" height="8" fill="#8B5E3C"/></svg>`,
+  '太陽': `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" width="90%" height="90%"><circle cx="20" cy="20" r="9" fill="#FFD700" stroke="#FFA500" stroke-width="1"/><g stroke="#FFD700" stroke-width="2.5" stroke-linecap="round"><line x1="20" y1="3" x2="20" y2="8"/><line x1="20" y1="32" x2="20" y2="37"/><line x1="3" y1="20" x2="8" y2="20"/><line x1="32" y1="20" x2="37" y2="20"/><line x1="7" y1="7" x2="11" y2="11"/><line x1="29" y1="29" x2="33" y2="33"/><line x1="33" y1="7" x2="29" y2="11"/><line x1="11" y1="29" x2="7" y2="33"/></g></svg>`,
+  '灯火': `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" width="90%" height="90%"><rect x="15" y="26" width="10" height="12" rx="2" fill="#e8c87a" stroke="#c8a050" stroke-width="1"/><ellipse cx="20" cy="26" rx="5" ry="2" fill="#d4a84b"/><path d="M20,6 C16,12 13,16 15,21 C17,25 23,25 25,21 C27,16 24,12 20,6 Z" fill="#FF6B00"/><path d="M20,10 C18,14 17,17 18,20 C19,22 21,22 22,20 C23,17 22,14 20,10 Z" fill="#FFD700"/></svg>`,
+  '山': `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" width="90%" height="90%"><polygon points="20,4 38,36 2,36" fill="#8B6914" stroke="#5c4a1e" stroke-width="1"/><polygon points="20,4 28,18 12,18" fill="white"/></svg>`,
+  '剣': `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" width="90%" height="90%"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#999"/><stop offset="40%" stop-color="#e8e8e8"/><stop offset="100%" stop-color="#aaa"/></linearGradient></defs><polygon points="20,2 23,28 20,32 17,28" fill="url(#sg)" stroke="#888" stroke-width="0.5"/><rect x="12" y="26" width="16" height="3" rx="1" fill="#B8860B" stroke="#8B6914" stroke-width="0.5"/><rect x="18" y="29" width="4" height="9" rx="1" fill="#8B6914"/></svg>`,
+  '宝石': `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" width="90%" height="90%"><defs><linearGradient id="dg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#fff9c4"/><stop offset="50%" stop-color="#FFD700"/><stop offset="100%" stop-color="#b8860b"/></linearGradient><linearGradient id="dg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffe566"/><stop offset="100%" stop-color="#f0a800"/></linearGradient></defs><polygon points="10,16 15,6 20,12 25,6 30,16" fill="url(#dg1)" stroke="#c8a000" stroke-width="0.8"/><polygon points="10,16 30,16 24,34 20,38 16,34" fill="url(#dg2)" stroke="#c8a000" stroke-width="0.8"/><line x1="10" y1="16" x2="20" y2="38" stroke="#c8a000" stroke-width="0.5" opacity="0.6"/><line x1="30" y1="16" x2="20" y2="38" stroke="#c8a000" stroke-width="0.5" opacity="0.6"/><line x1="15" y1="16" x2="16" y2="34" stroke="#fff" stroke-width="0.5" opacity="0.4"/><line x1="25" y1="16" x2="24" y2="34" stroke="#fff" stroke-width="0.5" opacity="0.4"/><polygon points="15,8 20,12 17,16 13,16" fill="white" opacity="0.35"/></svg>`,
+};
+
+// アイコンを返すグローバルヘルパー
+function getIcon(kd, size) {
+  const actualSize = (kd && kd.icon === '🗻') ? Math.round(size * 1.3) : size;
+  return '<span style="font-size:'+actualSize+'px;line-height:1;">' + (kd ? kd.icon : '') + '</span>';
+}
+
+// ===== 万年歴データ（hajime-f/meishikiより） =====
+const KAN  = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const SHI  = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const KAN_EL  = ['木','木','火','火','土','土','金','金','水','水'];
+const SHI_EL  = ['水','土','木','木','土','火','火','土','金','金','土','水'];
+
+// 蔵干（余気・中気・本気の順、-1は無し）
+const ZOKAN = [
+  [8,-1,9],   // 子
+  [9,7,5],    // 丑
+  [4,2,0],    // 寅
+  [0,-1,1],   // 卯
+  [1,9,4],    // 辰
+  [4,6,2],    // 巳
+  [2,5,3],    // 午
+  [3,1,5],    // 未
+  [4,8,6],    // 申
+  [6,-1,7],   // 酉
+  [7,3,4],    // 戌
+  [4,0,8],    // 亥
+];
+
+// 月干支テーブル（年干インデックス×12ヶ月）
+const MONTH_KANSHI = [
+  [[3,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[0,10],[1,11],[2,0]],  // 甲
+  [[5,1],[4,2],[5,3],[6,4],[7,5],[8,6],[9,7],[0,8],[1,9],[2,10],[3,11],[4,0]],  // 乙
+  [[7,1],[6,2],[7,3],[8,4],[9,5],[0,6],[1,7],[2,8],[3,9],[4,10],[5,11],[6,0]],  // 丙
+  [[9,1],[8,2],[9,3],[0,4],[1,5],[2,6],[3,7],[4,8],[5,9],[6,10],[7,11],[8,0]],  // 丁
+  [[1,1],[0,2],[1,3],[2,4],[3,5],[4,6],[5,7],[6,8],[7,9],[8,10],[9,11],[0,0]],  // 戊
+  [[3,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[0,10],[1,11],[2,0]],  // 己
+  [[5,1],[4,2],[5,3],[6,4],[7,5],[8,6],[9,7],[0,8],[1,9],[2,10],[3,11],[4,0]],  // 庚
+  [[7,1],[6,2],[7,3],[8,4],[9,5],[0,6],[1,7],[2,8],[3,9],[4,10],[5,11],[6,0]],  // 辛
+  [[9,1],[8,2],[9,3],[0,4],[1,5],[2,6],[3,7],[4,8],[5,9],[6,10],[7,11],[8,0]],  // 壬
+  [[1,1],[0,2],[1,3],[2,4],[3,5],[4,6],[5,7],[6,8],[7,9],[8,10],[9,11],[0,0]],  // 癸
+];
+
+// 時柱テーブル（日干インデックス×13）
+const TIME_KANSHI = [
+  [[0,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[0,10],[1,11],[2,0]],   // 甲
+  [[2,0],[3,1],[4,2],[5,3],[6,4],[7,5],[8,6],[9,7],[0,8],[1,9],[2,10],[3,11],[4,0]],   // 乙
+  [[4,0],[5,1],[6,2],[7,3],[8,4],[9,5],[0,6],[1,7],[2,8],[3,9],[4,10],[5,11],[6,0]],   // 丙
+  [[6,0],[7,1],[8,2],[9,3],[0,4],[1,5],[2,6],[3,7],[4,8],[5,9],[6,10],[7,11],[8,0]],   // 丁
+  [[8,0],[9,1],[0,2],[1,3],[2,4],[3,5],[4,6],[5,7],[6,8],[7,9],[8,10],[9,11],[0,0]],   // 戊
+  [[0,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[0,10],[1,11],[2,0]],   // 己
+  [[2,0],[3,1],[4,2],[5,3],[6,4],[7,5],[8,6],[9,7],[0,8],[1,9],[2,10],[3,11],[4,0]],   // 庚
+  [[4,0],[5,1],[6,2],[7,3],[8,4],[9,5],[0,6],[1,7],[2,8],[3,9],[4,10],[5,11],[6,0]],   // 辛
+  [[6,0],[7,1],[8,2],[9,3],[0,4],[1,5],[2,6],[3,7],[4,8],[5,9],[6,10],[7,11],[8,0]],   // 壬
+  [[8,0],[9,1],[0,2],[1,3],[2,4],[3,5],[4,6],[5,7],[6,8],[7,9],[8,10],[9,11],[0,0]],   // 癸
+];
+
+// 日柱テーブル（kisu_table）1926年〜2025年
+const KISU_TABLE = [
+  [26,57,25,56,26,57,27,58,29,59,30,0],
+  [31,2,30,1,31,2,32,3,34,4,35,5],
+  [36,7,36,7,37,8,38,9,40,10,41,11],
+  [42,13,41,12,42,13,43,14,45,15,46,16],
+  [47,18,46,17,47,18,48,19,50,20,51,21],
+  [52,23,51,22,52,23,53,24,55,25,56,26],
+  [57,28,57,28,58,29,59,30,1,31,2,32],
+  [3,34,2,33,3,34,4,35,6,36,7,37],
+  [8,39,7,38,8,39,9,40,11,41,12,42],
+  [13,44,12,43,13,44,14,45,16,46,17,47],
+  [18,49,18,49,19,50,20,51,22,52,23,53],
+  [24,55,23,54,24,55,25,56,27,57,28,58],
+  [29,0,28,59,29,0,30,1,32,2,33,3],
+  [34,5,33,4,34,5,35,6,37,7,38,8],
+  [39,10,39,10,40,11,41,12,43,13,44,14],
+  [45,16,44,15,45,16,46,17,48,18,49,19],
+  [50,21,49,20,50,21,51,22,53,23,54,24],
+  [55,26,54,25,55,26,56,27,58,28,59,29],
+  [0,31,0,31,1,32,2,33,4,34,5,35],
+  [6,37,5,36,6,37,7,38,9,39,10,40],
+  [11,42,10,41,11,42,12,43,14,44,15,45],
+  [16,47,15,46,16,47,17,48,19,49,20,50],
+  [21,52,21,52,22,53,23,54,25,55,26,56],
+  [27,58,26,57,27,58,28,59,30,0,31,1],
+  [32,3,31,2,32,3,33,4,35,5,36,6],
+  [37,8,36,7,37,8,38,9,40,10,41,11],
+  [42,13,42,13,43,14,44,15,46,16,47,17],
+  [48,19,47,18,48,19,49,20,51,21,52,22],
+  [53,24,52,23,53,24,54,25,56,26,57,27],
+  [58,29,57,28,58,29,59,30,1,31,2,32],
+  [3,34,3,34,4,35,5,36,7,37,8,38],
+  [9,40,8,39,9,40,10,41,12,42,13,43],
+  [14,45,13,44,14,45,15,46,17,47,18,48],
+  [19,50,18,49,19,50,20,51,22,52,23,53],
+  [24,55,24,55,25,56,26,57,28,58,29,59],
+  [30,1,29,0,30,1,31,2,33,3,34,4],
+  [35,6,34,5,35,6,36,7,38,8,39,9],
+  [40,11,39,10,40,11,41,12,43,13,44,14],
+  [45,16,45,16,46,17,47,18,49,19,50,20],
+  [51,22,50,21,51,22,52,23,54,24,55,25],
+  [56,27,55,26,56,27,57,28,59,29,0,30],
+  [1,32,0,31,1,32,2,33,4,34,5,35],
+  [6,37,6,37,7,38,8,39,10,40,11,41],
+  [12,43,11,42,12,43,13,44,15,45,16,46],
+  [17,48,16,47,17,48,18,49,20,50,21,51],
+  [22,53,21,52,22,53,23,54,25,55,26,56],
+  [27,58,27,58,28,59,29,0,31,1,32,2],
+  [33,4,32,3,33,4,34,5,36,6,37,7],
+  [38,9,37,8,38,9,39,10,41,11,42,12],
+  [43,14,42,13,43,14,44,15,46,16,47,17],
+  [48,19,48,19,49,20,50,21,52,22,53,23],
+  [54,25,53,24,54,25,55,26,57,27,58,28],
+  [59,30,58,29,59,30,0,31,2,32,3,33],
+  [4,35,3,34,4,35,5,36,7,37,8,38],
+  [9,40,9,40,10,41,11,42,13,43,14,44],
+  [15,46,14,45,15,46,16,47,18,48,19,49],
+  [20,51,19,50,20,51,21,52,23,53,24,54],
+  [25,56,24,55,25,56,26,57,28,58,29,59],
+  [30,1,30,1,31,2,32,3,34,4,35,5],
+  [36,7,35,6,36,7,37,8,39,9,40,10],
+  [41,12,40,11,41,12,42,13,44,14,45,15],
+  [46,17,45,16,46,17,47,18,49,19,50,20],
+  [51,22,51,22,52,23,53,24,55,25,56,26],
+  [57,28,56,27,57,28,58,29,0,30,1,31],
+  [2,33,1,32,2,33,3,34,5,35,6,36],
+  [7,38,6,37,7,38,8,39,10,40,11,41],
+  [12,43,12,43,13,44,14,45,16,46,17,47],
+  [18,49,17,48,18,49,19,50,21,51,22,52],
+  [23,54,22,53,23,54,24,55,26,56,27,57],
+  [28,59,27,58,28,59,29,0,31,1,32,2],
+  [33,4,33,4,34,5,35,6,37,7,38,8],
+  [39,10,38,9,39,10,40,11,42,12,43,13],
+  [44,15,43,14,44,15,45,16,47,17,48,18],
+  [49,20,48,19,49,20,50,21,52,22,53,23],
+  [54,25,54,25,55,26,56,27,58,28,59,29],
+  [0,31,59,30,0,31,1,32,3,33,4,34],
+  [5,36,4,35,5,36,6,37,8,38,9,39],
+  [10,41,9,40,10,41,11,42,13,43,14,44],
+  [15,46,15,46,16,47,17,48,19,49,20,50],
+  [21,52,20,51,21,52,22,53,24,54,25,55],
+  [26,57,25,56,26,57,27,58,29,59,30,0],
+  [31,2,30,1,31,2,32,3,34,4,35,5],
+  [36,7,36,7,37,8,38,9,40,10,41,11],
+  [42,13,41,12,42,13,43,14,45,15,46,16],
+  [47,18,46,17,47,18,48,19,50,20,51,21],
+  [52,23,51,22,52,23,53,24,55,25,56,26],
+  [57,28,57,28,58,29,59,30,1,31,2,32],
+  [3,34,2,33,3,34,4,35,6,36,7,37],
+  [8,39,7,38,8,39,9,40,11,41,12,42],
+  [13,44,12,43,13,44,14,45,16,46,17,47],
+  [18,49,18,49,19,50,20,51,22,52,23,53],
+  [24,55,23,54,24,55,25,56,27,57,28,58],
+  [29,0,28,59,29,0,30,1,32,2,33,3],
+  [34,5,33,4,34,5,35,6,37,7,38,8],
+  [39,10,39,10,40,11,41,12,43,13,44,14],
+  [45,16,44,15,45,16,46,17,48,18,49,19],
+  [50,21,49,20,50,21,51,22,53,23,54,24],
+  [55,26,54,25,55,26,56,27,58,28,59,29],
+  [0,31,0,31,1,32,2,33,4,34,5,35],
+];
+
+// 節入りデータ [年,月,日,時,分]
+const SETSUIRI = [
+  [1926,1,6,10,55],[1926,2,4,22,39],[1926,3,6,17,0],[1926,4,5,22,19],[1926,5,6,16,9],[1926,6,6,20,42],[1926,7,8,7,6],[1926,8,8,16,45],[1926,9,8,19,16],[1926,10,9,10,25],[1926,11,8,13,8],[1926,12,8,5,39],
+  [1927,1,6,16,45],[1927,2,5,4,31],[1927,3,6,22,51],[1927,4,6,4,7],[1927,5,6,21,54],[1927,6,7,2,25],[1927,7,8,12,50],[1927,8,8,22,32],[1927,9,9,1,6],[1927,10,9,16,16],[1927,11,8,18,57],[1927,12,8,11,27],
+  [1928,1,6,22,32],[1928,2,5,9,17],[1928,3,6,4,38],[1928,4,5,9,55],[1928,5,6,3,44],[1928,6,6,8,18],[1928,7,7,18,45],[1928,8,8,4,28],[1928,9,8,7,2],[1928,10,8,22,11],[1928,11,8,0,50],[1928,12,7,17,18],
+  [1929,1,6,4,23],[1929,2,4,16,9],[1929,3,6,10,32],[1929,4,5,15,52],[1929,5,6,9,41],[1929,6,6,14,11],[1929,7,8,0,32],[1929,8,8,10,9],[1929,9,8,12,40],[1929,10,9,3,48],[1929,11,8,6,28],[1929,12,7,22,57],
+  [1930,1,6,10,3],[1930,2,4,21,52],[1930,3,6,16,17],[1930,4,5,21,38],[1930,5,6,15,28],[1930,6,6,19,58],[1930,7,8,6,20],[1930,8,8,15,58],[1930,9,8,18,29],[1930,10,9,9,38],[1930,11,8,12,20],[1930,12,8,4,51],
+  [1931,1,6,15,56],[1931,2,5,3,41],[1931,3,6,22,3],[1931,4,6,3,21],[1931,5,6,21,10],[1931,6,7,1,42],[1931,7,8,12,6],[1931,8,8,21,45],[1931,9,9,0,18],[1931,10,9,15,27],[1931,11,8,18,10],[1931,12,8,10,41],
+  [1932,1,6,21,46],[1932,2,5,9,30],[1932,3,6,3,50],[1932,4,5,9,7],[1932,5,6,2,55],[1932,6,6,7,28],[1932,7,7,17,53],[1932,8,8,3,32],[1932,9,8,6,3],[1932,10,8,21,10],[1932,11,7,23,50],[1932,12,7,16,19],
+  [1933,1,6,3,23],[1933,2,4,15,19],[1933,3,6,9,32],[1933,4,5,14,51],[1933,5,6,8,43],[1933,6,6,13,18],[1933,7,7,23,45],[1933,8,8,9,26],[1933,9,8,11,59],[1933,10,9,3,4],[1933,11,8,5,43],[1933,12,7,22,12],
+  [1934,1,6,9,17],[1934,2,4,21,4],[1934,3,6,15,27],[1934,4,5,20,44],[1934,5,6,14,31],[1934,6,6,19,2],[1934,7,8,5,25],[1934,8,8,15,4],[1934,9,8,17,37],[1934,10,9,8,46],[1934,11,8,11,27],[1934,12,8,3,57],
+  [1935,1,6,15,3],[1935,2,5,2,49],[1935,3,6,21,11],[1935,4,6,2,27],[1935,5,6,20,12],[1935,6,7,0,42],[1935,7,8,11,6],[1935,8,8,20,48],[1935,9,8,23,25],[1935,10,9,14,36],[1935,11,8,17,18],[1935,12,8,9,45],
+  [1936,1,6,20,47],[1936,2,5,8,30],[1936,3,6,2,50],[1936,4,5,8,7],[1936,5,6,1,57],[1936,6,6,6,31],[1936,7,6,16,59],[1936,8,8,2,44],[1936,9,8,5,21],[1936,10,8,20,33],[1936,11,7,23,15],[1936,12,7,15,43],
+  [1937,1,6,2,44],[1937,2,4,14,26],[1937,3,6,8,45],[1937,4,5,14,2],[1937,5,6,7,51],[1937,6,6,12,23],[1937,7,7,22,46],[1937,8,8,8,26],[1937,9,8,11,0],[1937,10,9,2,11],[1937,11,8,4,56],[1937,12,7,21,27],
+  [1938,1,6,8,32],[1938,2,4,20,16],[1938,3,6,14,34],[1938,4,5,19,49],[1938,5,6,13,35],[1938,6,6,18,7],[1938,7,8,4,32],[1938,8,8,14,13],[1938,9,8,16,43],[1938,10,9,8,2],[1938,11,8,10,49],[1938,12,8,3,23],
+  [1939,1,6,14,28],[1939,2,5,2,11],[1939,3,6,20,27],[1939,4,6,1,38],[1939,5,6,19,21],[1939,6,6,23,52],[1939,7,8,10,19],[1939,8,8,20,4],[1939,9,8,22,42],[1939,10,9,13,57],[1939,11,8,16,44],[1939,12,8,9,18],
+  [1940,1,6,20,24],[1940,2,5,8,8],[1940,3,6,2,24],[1940,4,5,7,35],[1940,5,6,1,17],[1940,6,6,5,44],[1940,7,7,16,8],[1940,8,8,1,52],[1940,9,8,4,30],[1940,10,8,19,43],[1940,11,7,22,27],[1940,12,7,14,59],
+  [1941,1,6,2,5],[1941,2,4,13,50],[1941,3,6,8,11],[1941,4,5,13,25],[1941,5,6,7,10],[1941,6,6,11,40],[1941,7,7,22,3],[1941,8,8,7,46],[1941,9,8,10,24],[1941,10,9,1,39],[1941,11,8,4,25],[1941,12,7,20,57],
+  [1942,1,6,8,3],[1942,2,4,19,49],[1942,3,6,14,10],[1942,4,5,19,24],[1942,5,6,13,7],[1942,6,6,17,33],[1942,7,8,3,52],[1942,8,8,13,31],[1942,9,8,16,7],[1942,10,9,7,22],[1942,11,8,10,12],[1942,12,8,2,47],
+  [1943,1,6,13,55],[1943,2,5,1,41],[1943,3,6,19,59],[1943,4,6,1,12],[1943,5,6,18,54],[1943,6,6,23,19],[1943,7,8,9,39],[1943,8,8,19,19],[1943,9,8,21,56],[1943,10,9,13,11],[1943,11,8,15,59],[1943,12,8,8,33],
+  [1944,1,6,19,40],[1944,2,5,7,24],[1944,3,6,1,41],[1944,4,5,6,54],[1944,5,6,0,40],[1944,6,6,5,11],[1944,7,7,15,36],[1944,8,8,1,49],[1944,9,8,3,56],[1944,10,8,19,9],[1944,11,7,21,55],[1944,12,7,14,28],
+  [1945,1,6,1,35],[1945,2,4,13,20],[1945,3,6,7,38],[1945,4,5,12,52],[1945,5,6,6,37],[1945,6,6,11,6],[1945,7,7,21,27],[1945,8,8,7,6],[1945,9,8,9,39],[1945,10,9,0,50],[1945,11,8,3,35],[1945,12,7,20,8],
+  [1946,1,6,7,17],[1946,2,4,19,4],[1946,3,6,13,25],[1946,4,5,18,39],[1946,5,6,12,22],[1946,6,6,16,49],[1946,7,8,3,11],[1946,8,8,12,52],[1946,9,8,15,28],[1946,10,9,6,41],[1946,11,8,9,28],[1946,12,8,2,1],
+  [1947,1,6,13,7],[1947,2,5,0,51],[1947,3,6,19,8],[1947,4,6,0,21],[1947,5,6,18,3],[1947,6,6,22,32],[1947,7,8,8,56],[1947,8,8,18,41],[1947,9,8,21,22],[1947,10,9,12,38],[1947,11,8,15,25],[1947,12,8,7,57],
+  [1948,1,6,19,1],[1948,2,5,6,43],[1948,3,6,0,58],[1948,4,5,6,10],[1948,5,5,23,53],[1948,6,6,4,21],[1948,7,7,14,44],[1948,8,8,0,27],[1948,9,8,3,6],[1948,10,8,18,21],[1948,11,7,21,7],[1948,12,7,13,38],
+  [1949,1,6,0,42],[1949,2,4,12,24],[1949,3,6,6,40],[1949,4,5,12,52],[1949,5,6,5,37],[1949,6,6,10,7],[1949,7,7,20,32],[1949,8,8,6,16],[1949,9,8,8,55],[1949,10,9,0,12],[1949,11,8,3,1],[1949,12,7,19,34],
+  [1950,1,6,6,39],[1950,2,4,18,21],[1950,3,6,12,36],[1950,4,5,17,45],[1950,5,6,11,25],[1950,6,6,15,51],[1950,7,8,2,14],[1950,8,8,11,56],[1950,9,8,14,34],[1950,10,9,5,52],[1950,11,8,8,44],[1950,12,8,1,22],
+  [1951,1,6,12,31],[1951,2,5,0,14],[1951,3,6,18,27],[1951,4,5,23,33],[1951,5,6,17,10],[1951,6,6,21,33],[1951,7,8,7,54],[1951,8,8,17,38],[1951,9,8,20,19],[1951,10,9,11,37],[1951,11,8,14,27],[1951,12,8,7,3],
+  [1952,1,6,18,10],[1952,2,5,5,54],[1952,3,6,0,8],[1952,4,5,5,16],[1952,5,5,22,54],[1952,6,6,3,21],[1952,7,7,13,45],[1952,8,7,23,32],[1952,9,8,2,14],[1952,10,8,17,33],[1952,11,7,20,22],[1952,12,7,12,56],
+  [1953,1,6,0,3],[1953,2,4,11,47],[1953,3,6,6,3],[1953,4,5,11,13],[1953,5,6,4,53],[1953,6,6,9,17],[1953,7,7,19,35],[1953,8,8,5,15],[1953,9,8,7,53],[1953,10,8,23,11],[1953,11,8,2,2],[1953,12,7,18,38],
+  [1954,1,6,5,46],[1954,2,4,17,31],[1954,3,6,11,49],[1954,4,5,17,0],[1954,5,6,10,39],[1954,6,6,15,1],[1954,7,8,1,20],[1954,8,8,11,0],[1954,9,8,13,38],[1954,10,9,4,58],[1954,11,8,7,51],[1954,12,8,0,29],
+  [1955,1,6,11,37],[1955,2,4,23,18],[1955,3,6,17,32],[1955,4,5,22,39],[1955,5,6,16,18],[1955,6,6,20,44],[1955,7,8,7,6],[1955,8,8,16,51],[1955,9,8,19,32],[1955,10,9,10,53],[1955,11,8,13,46],[1955,12,8,6,24],
+  [1956,1,6,17,31],[1956,2,5,5,13],[1956,3,5,23,25],[1956,4,5,4,32],[1956,5,5,22,10],[1956,6,6,2,36],[1956,7,7,12,59],[1956,8,7,22,41],[1956,9,8,1,20],[1956,10,8,16,37],[1956,11,7,19,27],[1956,12,7,12,3],
+  [1957,1,5,23,11],[1957,2,4,10,55],[1957,3,6,5,11],[1957,4,5,10,19],[1957,5,6,3,59],[1957,6,6,8,25],[1957,7,7,18,49],[1957,8,8,4,33],[1957,9,8,7,13],[1957,10,8,22,31],[1957,11,8,1,21],[1957,12,7,17,57],
+  [1958,1,6,5,5],[1958,2,4,16,50],[1958,3,6,11,6],[1958,4,5,16,13],[1958,5,6,9,50],[1958,6,6,14,13],[1958,7,8,0,34],[1958,8,8,10,18],[1958,9,8,13,0],[1958,10,9,4,20],[1958,11,8,7,13],[1958,12,7,23,50],
+  [1959,1,6,10,59],[1959,2,4,22,43],[1959,3,6,16,57],[1959,4,5,22,4],[1959,5,6,15,39],[1959,6,6,20,1],[1959,7,8,6,20],[1959,8,8,16,5],[1959,9,8,18,49],[1959,10,9,10,11],[1959,11,8,13,3],[1959,12,8,5,38],
+  [1960,1,6,16,43],[1960,2,5,4,23],[1960,3,5,22,36],[1960,4,5,3,44],[1960,5,5,21,23],[1960,6,6,1,48],[1960,7,7,12,13],[1960,8,7,22,0],[1960,9,8,0,46],[1960,10,8,16,9],[1960,11,7,19,2],[1960,12,7,11,38],
+  [1961,1,5,22,43],[1961,2,4,10,23],[1961,3,6,4,35],[1961,4,5,9,42],[1961,5,6,3,21],[1961,6,6,7,46],[1961,7,7,18,7],[1961,8,8,3,48],[1961,9,8,6,29],[1961,10,8,21,51],[1961,11,8,0,46],[1961,12,7,17,26],
+  [1962,1,6,4,35],[1962,2,4,16,18],[1962,3,6,10,30],[1962,4,5,15,34],[1962,5,6,9,9],[1962,6,6,13,31],[1962,7,7,23,51],[1962,8,8,9,34],[1962,9,8,12,16],[1962,10,9,3,38],[1962,11,8,6,35],[1962,12,7,23,17],
+  [1963,1,6,10,27],[1963,2,4,22,8],[1963,3,6,16,17],[1963,4,5,21,19],[1963,5,6,14,52],[1963,6,6,19,14],[1963,7,8,5,38],[1963,8,8,15,26],[1963,9,8,18,12],[1963,10,9,9,36],[1963,11,8,12,33],[1963,12,8,5,13],
+  [1964,1,6,16,23],[1964,2,5,4,5],[1964,3,5,22,16],[1964,4,5,3,18],[1964,5,5,20,51],[1964,6,6,1,12],[1964,7,7,11,32],[1964,8,7,21,16],[1964,9,7,23,59],[1964,10,8,15,22],[1964,11,7,18,15],[1964,12,7,10,53],
+  [1965,1,5,22,2],[1965,2,4,9,46],[1965,3,6,4,1],[1965,4,5,9,7],[1965,5,6,2,42],[1965,6,6,7,2],[1965,7,7,17,21],[1965,8,8,3,5],[1965,9,8,5,48],[1965,10,8,21,11],[1965,11,8,0,7],[1965,12,7,16,46],
+  [1966,1,6,3,55],[1966,2,4,15,38],[1966,3,6,9,52],[1966,4,5,14,57],[1966,5,6,8,30],[1966,6,6,12,50],[1966,7,7,23,7],[1966,8,8,8,49],[1966,9,8,11,32],[1966,10,9,2,57],[1966,11,8,5,56],[1966,12,7,22,38],
+  [1967,1,6,9,49],[1967,2,4,21,31],[1967,3,6,15,42],[1967,4,5,20,45],[1967,5,6,14,17],[1967,6,6,18,36],[1967,7,8,4,53],[1967,8,8,14,35],[1967,9,8,17,18],[1967,10,9,8,41],[1967,11,8,11,38],[1967,12,8,4,18],
+  [1968,1,6,15,27],[1968,2,5,3,8],[1968,3,5,21,18],[1968,4,5,2,21],[1968,5,5,19,56],[1968,6,6,0,19],[1968,7,7,10,42],[1968,8,7,20,27],[1968,9,7,23,12],[1968,10,8,14,35],[1968,11,7,17,30],[1968,12,7,10,9],
+  [1969,1,5,21,17],[1969,2,4,8,59],[1969,3,6,3,11],[1969,4,5,8,15],[1969,5,6,1,50],[1969,6,6,6,11],[1969,7,7,16,32],[1969,8,8,2,14],[1969,9,8,4,56],[1969,10,8,20,17],[1969,11,7,23,12],[1969,12,7,15,52],
+  [1970,1,6,3,2],[1970,2,4,14,46],[1970,3,6,8,59],[1970,4,5,14,2],[1970,5,6,7,34],[1970,6,6,11,52],[1970,7,7,22,11],[1970,8,8,7,54],[1970,9,8,10,38],[1970,10,9,2,2],[1970,11,8,4,58],[1970,12,7,21,38],
+  [1971,1,6,8,45],[1971,2,4,20,26],[1971,3,6,14,35],[1971,4,5,19,36],[1971,5,6,13,8],[1971,6,6,17,29],[1971,7,8,3,51],[1971,8,8,13,40],[1971,9,8,16,30],[1971,10,9,7,59],[1971,11,8,10,57],[1971,12,8,3,36],
+  [1972,1,6,14,42],[1972,2,5,2,20],[1972,3,5,20,28],[1972,4,5,1,29],[1972,5,5,19,1],[1972,6,5,23,22],[1972,7,7,9,43],[1972,8,7,19,29],[1972,9,7,22,15],[1972,10,8,13,42],[1972,11,7,16,40],[1972,12,7,9,19],
+  [1973,1,5,20,26],[1973,2,4,8,4],[1973,3,6,2,13],[1973,4,5,7,14],[1973,5,6,0,46],[1973,6,6,5,7],[1973,7,7,15,27],[1973,8,8,1,13],[1973,9,8,4,0],[1973,10,8,19,28],[1973,11,7,22,28],[1973,12,7,15,11],
+  [1974,1,6,2,20],[1974,2,4,14,0],[1974,3,6,8,7],[1974,4,5,13,5],[1974,5,6,6,34],[1974,6,6,10,52],[1974,7,7,21,11],[1974,8,8,6,57],[1974,9,8,9,45],[1974,10,9,1,15],[1974,11,8,4,18],[1974,12,7,21,5],
+  [1975,1,6,8,18],[1975,2,4,19,59],[1975,3,6,14,6],[1975,4,5,19,2],[1975,5,6,12,27],[1975,6,6,16,42],[1975,7,8,2,59],[1975,8,8,12,45],[1975,9,8,15,33],[1975,10,9,7,2],[1975,11,8,10,3],[1975,12,8,2,47],
+  [1976,1,6,13,58],[1976,2,5,1,40],[1976,3,5,19,48],[1976,4,5,0,47],[1976,5,5,18,14],[1976,6,5,22,31],[1976,7,7,8,51],[1976,8,7,18,39],[1976,9,7,21,28],[1976,10,8,12,58],[1976,11,7,15,59],[1976,12,7,8,41],
+  [1977,1,5,19,51],[1977,2,4,7,34],[1977,3,6,1,44],[1977,4,5,6,46],[1977,5,6,0,16],[1977,6,6,4,32],[1977,7,7,14,48],[1977,8,8,0,30],[1977,9,8,3,16],[1977,10,8,18,44],[1977,11,7,21,46],[1977,12,7,14,31],
+  [1978,1,6,1,44],[1978,2,4,13,27],[1978,3,6,7,38],[1978,4,5,12,39],[1978,5,6,6,9],[1978,6,6,10,23],[1978,7,7,20,37],[1978,8,8,6,18],[1978,9,8,9,3],[1978,10,9,0,31],[1978,11,8,3,34],[1978,12,7,20,20],
+  [1979,1,6,7,32],[1979,2,4,19,13],[1979,3,6,13,20],[1979,4,5,18,18],[1979,5,6,11,47],[1979,6,6,16,5],[1979,7,8,2,25],[1979,8,8,12,11],[1979,9,8,15,0],[1979,10,9,6,30],[1979,11,8,9,33],[1979,12,8,2,18],
+  [1980,1,6,13,29],[1980,2,5,1,10],[1980,3,5,19,17],[1980,4,5,0,15],[1980,5,5,17,45],[1980,6,5,22,4],[1980,7,7,8,24],[1980,8,7,18,9],[1980,9,7,20,54],[1980,10,8,12,20],[1980,11,7,15,19],[1980,12,7,8,2],
+  [1981,1,5,19,13],[1981,2,4,6,56],[1981,3,6,1,5],[1981,4,5,6,5],[1981,5,5,23,35],[1981,6,6,3,53],[1981,7,7,14,12],[1981,8,7,23,57],[1981,9,8,2,43],[1981,10,8,18,10],[1981,11,7,21,9],[1981,12,7,13,52],
+  [1982,1,6,1,3],[1982,2,4,12,46],[1982,3,6,6,55],[1982,4,5,11,53],[1982,5,6,5,20],[1982,6,6,9,36],[1982,7,7,19,55],[1982,8,8,5,42],[1982,9,8,8,32],[1982,10,9,0,2],[1982,11,8,3,4],[1982,12,7,19,48],
+  [1983,1,6,6,59],[1983,2,4,18,40],[1983,3,6,12,47],[1983,4,5,17,44],[1983,5,6,11,11],[1983,6,6,15,26],[1983,7,8,1,43],[1983,8,8,11,30],[1983,9,8,14,20],[1983,10,9,5,51],[1983,11,8,8,53],[1983,12,8,1,34],
+  [1984,1,6,12,41],[1984,2,5,0,19],[1984,3,5,18,25],[1984,4,4,23,22],[1984,5,5,16,51],[1984,6,5,21,9],[1984,7,7,7,29],[1984,8,7,17,18],[1984,9,7,20,10],[1984,10,8,11,43],[1984,11,7,14,46],[1984,12,7,7,28],
+  [1985,1,5,18,35],[1985,2,4,6,12],[1985,3,6,0,16],[1985,4,5,5,14],[1985,5,5,22,43],[1985,6,6,3,0],[1985,7,7,13,19],[1985,8,7,23,4],[1985,9,8,1,53],[1985,10,8,17,25],[1985,11,7,20,29],[1985,12,7,13,16],
+  [1986,1,6,0,28],[1986,2,4,12,8],[1986,3,6,6,12],[1986,4,5,11,6],[1986,5,6,4,31],[1986,6,6,8,44],[1986,7,7,19,1],[1986,8,8,4,46],[1986,9,8,7,35],[1986,10,8,23,7],[1986,11,8,2,13],[1986,12,7,19,1],
+  [1987,1,6,6,13],[1987,2,4,17,52],[1987,3,6,11,54],[1987,4,5,16,44],[1987,5,6,10,6],[1987,6,6,14,19],[1987,7,8,0,39],[1987,8,8,10,29],[1987,9,8,13,24],[1987,10,9,5,0],[1987,11,8,8,6],[1987,12,8,0,52],
+  [1988,1,6,12,4],[1988,2,4,23,43],[1988,3,5,17,47],[1988,4,4,22,39],[1988,5,5,16,2],[1988,6,5,20,15],[1988,7,7,6,33],[1988,8,7,16,20],[1988,9,7,19,12],[1988,10,8,10,45],[1988,11,7,13,49],[1988,12,7,6,34],
+  [1989,1,5,17,46],[1989,2,4,5,27],[1989,3,5,23,34],[1989,4,5,4,30],[1989,5,5,21,54],[1989,6,6,2,5],[1989,7,7,12,19],[1989,8,7,22,4],[1989,9,8,0,54],[1989,10,8,16,27],[1989,11,7,19,34],[1989,12,7,12,21],
+  [1990,1,5,23,33],[1990,2,4,11,14],[1990,3,6,5,19],[1990,4,5,10,13],[1990,5,6,3,35],[1990,6,6,7,46],[1990,7,7,18,0],[1990,8,8,3,46],[1990,9,8,6,37],[1990,10,8,22,14],[1990,11,8,1,23],[1990,12,7,18,14],
+  [1991,1,6,5,28],[1991,2,4,17,8],[1991,3,6,11,12],[1991,4,5,16,5],[1991,5,6,9,27],[1991,6,6,13,38],[1991,7,7,23,53],[1991,8,8,9,37],[1991,9,8,12,27],[1991,10,9,4,1],[1991,11,8,7,8],[1991,12,7,23,56],
+  [1992,1,6,11,9],[1992,2,4,22,48],[1992,3,5,16,52],[1992,4,4,21,45],[1992,5,5,15,9],[1992,6,5,19,22],[1992,7,7,5,40],[1992,8,7,15,27],[1992,9,7,18,18],[1992,10,8,9,51],[1992,11,7,12,57],[1992,12,7,5,44],
+  [1993,1,5,16,57],[1993,2,4,4,37],[1993,3,5,22,43],[1993,4,5,3,37],[1993,5,5,21,2],[1993,6,6,1,15],[1993,7,7,11,32],[1993,8,7,21,18],[1993,9,8,0,8],[1993,10,8,15,40],[1993,11,7,18,46],[1993,12,7,11,34],
+  [1994,1,5,22,48],[1994,2,4,10,31],[1994,3,6,4,38],[1994,4,5,9,32],[1994,5,6,2,54],[1994,6,6,7,5],[1994,7,7,17,19],[1994,8,8,3,4],[1994,9,8,5,55],[1994,10,8,21,29],[1994,11,8,0,36],[1994,12,7,17,23],
+  [1995,1,6,4,34],[1995,2,4,16,13],[1995,3,6,10,16],[1995,4,5,15,8],[1995,5,6,8,30],[1995,6,6,12,42],[1995,7,7,23,1],[1995,8,8,8,52],[1995,9,8,11,49],[1995,10,9,3,27],[1995,11,8,6,36],[1995,12,7,23,22],
+  [1996,1,6,10,31],[1996,2,4,22,8],[1996,3,5,16,10],[1996,4,4,21,2],[1996,5,5,14,26],[1996,6,5,18,41],[1996,7,7,5,0],[1996,8,7,14,49],[1996,9,7,17,42],[1996,10,8,9,19],[1996,11,7,12,27],[1996,12,7,5,14],
+  [1997,1,5,16,24],[1997,2,4,4,2],[1997,3,5,22,4],[1997,4,5,2,56],[1997,5,5,20,19],[1997,6,6,0,33],[1997,7,7,10,49],[1997,8,7,20,36],[1997,9,7,23,29],[1997,10,8,15,5],[1997,11,7,18,15],[1997,12,7,11,5],
+  [1998,1,5,22,18],[1998,2,4,9,57],[1998,3,6,3,57],[1998,4,5,8,45],[1998,5,6,2,3],[1998,6,6,6,13],[1998,7,7,16,30],[1998,8,8,2,20],[1998,9,8,5,16],[1998,10,8,20,56],[1998,11,8,0,8],[1998,12,7,17,2],
+  [1999,1,6,4,17],[1999,2,4,15,57],[1999,3,6,9,58],[1999,4,5,14,45],[1999,5,6,8,1],[1999,6,6,12,9],[1999,7,7,22,25],[1999,8,8,8,14],[1999,9,8,11,10],[1999,10,9,2,48],[1999,11,8,5,58],[1999,12,7,22,47],
+  [2000,1,6,10,1],[2000,2,4,21,40],[2000,3,5,15,43],[2000,4,4,20,32],[2000,5,5,13,50],[2000,6,5,17,59],[2000,7,7,4,14],[2000,8,7,14,3],[2000,9,7,16,59],[2000,10,8,8,38],[2000,11,7,11,48],[2000,12,7,4,37],
+  [2001,1,5,15,49],[2001,2,4,3,29],[2001,3,5,21,32],[2001,4,5,2,24],[2001,5,5,19,45],[2001,6,5,23,54],[2001,7,7,10,7],[2001,8,7,19,52],[2001,9,7,22,46],[2001,10,8,14,25],[2001,11,7,17,37],[2001,12,7,10,29],
+  [2002,1,5,21,43],[2002,2,4,9,24],[2002,3,6,3,28],[2002,4,5,8,18],[2002,5,6,1,37],[2002,6,6,5,45],[2002,7,7,15,56],[2002,8,8,1,39],[2002,9,8,4,31],[2002,10,8,20,9],[2002,11,7,23,22],[2002,12,7,16,14],
+  [2003,1,6,3,28],[2003,2,4,15,5],[2003,3,6,9,5],[2003,4,5,13,52],[2003,5,6,7,10],[2003,6,6,11,20],[2003,7,7,21,36],[2003,8,8,7,24],[2003,9,8,10,20],[2003,10,9,2,1],[2003,11,8,5,13],[2003,12,7,22,5],
+  [2004,1,6,9,19],[2004,2,4,20,56],[2004,3,5,14,56],[2004,4,4,19,43],[2004,5,5,13,2],[2004,6,5,17,14],[2004,7,7,3,31],[2004,8,7,13,20],[2004,9,7,16,13],[2004,10,8,7,49],[2004,11,7,10,59],[2004,12,7,3,49],
+  [2005,1,5,15,3],[2005,2,4,2,43],[2005,3,5,20,45],[2005,4,5,1,34],[2005,5,5,18,53],[2005,6,5,23,2],[2005,7,7,9,17],[2005,8,7,19,3],[2005,9,7,21,57],[2005,10,8,13,33],[2005,11,7,16,42],[2005,12,7,9,33],
+  [2006,1,5,20,47],[2006,2,4,8,27],[2006,3,6,2,29],[2006,4,5,7,15],[2006,5,6,0,31],[2006,6,6,4,37],[2006,7,7,14,51],[2006,8,8,0,41],[2006,9,8,3,39],[2006,10,8,19,21],[2006,11,7,22,35],[2006,12,7,15,27],
+  [2007,1,6,2,40],[2007,2,4,14,18],[2007,3,6,8,18],[2007,4,5,13,5],[2007,5,6,6,20],[2007,6,6,10,27],[2007,7,7,20,42],[2007,8,8,6,31],[2007,9,8,9,29],[2007,10,9,1,12],[2007,11,8,4,24],[2007,12,7,21,14],
+  [2008,1,6,8,25],[2008,2,4,20,0],[2008,3,5,13,59],[2008,4,4,18,46],[2008,5,5,12,3],[2008,6,5,16,12],[2008,7,7,2,27],[2008,8,7,12,16],[2008,9,7,15,14],[2008,10,8,6,57],[2008,11,7,10,11],[2008,12,7,3,2],
+  [2009,1,5,14,14],[2009,2,4,1,50],[2009,3,5,19,48],[2009,4,5,0,34],[2009,5,5,17,51],[2009,6,5,21,59],[2009,7,7,8,13],[2009,8,7,18,1],[2009,9,7,20,58],[2009,10,8,12,40],[2009,11,7,15,56],[2009,12,7,8,52],
+  [2010,1,5,20,9],[2010,2,4,7,48],[2010,3,6,1,46],[2010,4,5,6,30],[2010,5,5,23,44],[2010,6,6,3,49],[2010,7,7,14,2],[2010,8,7,23,49],[2010,9,8,2,45],[2010,10,8,18,26],[2010,11,7,21,42],[2010,12,7,14,38],
+  [2011,1,6,1,55],[2011,2,4,13,33],[2011,3,6,7,30],[2011,4,5,12,12],[2011,5,6,5,23],[2011,6,6,9,27],[2011,7,7,19,42],[2011,8,8,5,33],[2011,9,8,8,34],[2011,10,9,0,19],[2011,11,8,3,35],[2011,12,7,20,29],
+  [2012,1,6,7,44],[2012,2,4,19,22],[2012,3,5,13,21],[2012,4,4,18,6],[2012,5,5,11,20],[2012,6,5,15,26],[2012,7,7,1,41],[2012,8,7,11,31],[2012,9,7,14,29],[2012,10,8,6,12],[2012,11,7,9,26],[2012,12,7,2,19],
+  [2013,1,5,13,34],[2013,2,4,1,13],[2013,3,5,19,15],[2013,4,5,0,2],[2013,5,5,17,18],[2013,6,5,21,23],[2013,7,7,7,35],[2013,8,7,17,20],[2013,9,7,20,16],[2013,10,8,11,58],[2013,11,7,15,14],[2013,12,7,8,9],
+  [2014,1,5,19,24],[2014,2,4,7,3],[2014,3,6,1,2],[2014,4,5,5,47],[2014,5,5,22,59],[2014,6,6,3,3],[2014,7,7,13,15],[2014,8,7,23,2],[2014,9,8,2,1],[2014,10,8,17,48],[2014,11,7,2,17],[2014,12,7,14,4],
+  [2015,1,6,1,21],[2015,2,4,12,58],[2015,3,6,6,56],[2015,4,5,11,39],[2015,5,6,4,53],[2015,6,6,8,58],[2015,7,7,19,12],[2015,8,8,5,1],[2015,9,8,8,0],[2015,10,8,23,43],[2015,11,8,2,59],[2015,12,7,19,53],
+  [2016,1,6,7,8],[2016,2,4,18,46],[2016,3,5,12,44],[2016,4,4,17,28],[2016,5,5,10,42],[2016,6,5,14,49],[2016,7,7,1,3],[2016,8,7,10,53],[2016,9,7,13,51],[2016,10,8,5,33],[2016,11,7,8,48],[2016,12,7,1,41],
+  [2017,1,5,12,56],[2017,2,4,0,34],[2017,3,5,18,33],[2017,4,4,23,17],[2017,5,5,16,31],[2017,6,5,20,37],[2017,7,7,6,51],[2017,8,7,16,40],[2017,9,7,19,39],[2017,10,8,11,22],[2017,11,7,14,38],[2017,12,7,7,33],
+  [2018,1,5,18,49],[2018,2,4,6,28],[2018,3,6,0,28],[2018,4,5,5,13],[2018,5,5,22,25],[2018,6,6,2,29],[2018,7,7,12,42],[2018,8,7,22,31],[2018,9,8,1,30],[2018,10,8,17,15],[2018,11,7,20,32],[2018,12,7,13,26],
+  [2019,1,6,0,39],[2019,2,4,12,14],[2019,3,6,6,10],[2019,4,5,10,51],[2019,5,6,4,3],[2019,6,6,8,6],[2019,7,7,18,21],[2019,8,8,4,13],[2019,9,8,7,17],[2019,10,8,23,6],[2019,11,8,2,24],[2019,12,7,19,18],
+  [2020,1,6,6,30],[2020,2,4,18,3],[2020,3,5,11,57],[2020,4,4,16,38],[2020,5,5,9,51],[2020,6,5,13,58],[2020,7,7,0,14],[2020,8,7,10,6],[2020,9,7,13,8],[2020,10,8,4,55],[2020,11,7,8,14],[2020,12,7,1,9],
+  [2021,1,5,12,23],[2021,2,3,23,59],[2021,3,5,17,54],[2021,4,4,22,35],[2021,5,5,15,47],[2021,6,5,19,52],[2021,7,7,6,5],[2021,8,7,15,54],[2021,9,7,18,53],[2021,10,8,10,39],[2021,11,7,13,59],[2021,12,7,6,57],
+  [2022,1,5,18,14],[2022,2,4,5,51],[2022,3,5,23,44],[2022,4,5,4,20],[2022,5,5,21,26],[2022,6,6,1,26],[2022,7,7,11,38],[2022,8,7,21,29],[2022,9,8,0,32],[2022,10,8,16,22],[2022,11,7,19,45],[2022,12,7,12,46],
+  [2023,1,6,0,5],[2023,2,4,11,43],[2023,3,6,5,36],[2023,4,5,10,13],[2023,5,6,3,19],[2023,6,6,7,18],[2023,7,7,17,31],[2023,8,8,3,23],[2023,9,8,6,27],[2023,10,8,22,16],[2023,11,8,1,36],[2023,12,7,18,33],
+  [2024,1,6,5,49],[2024,2,4,17,27],[2024,3,5,11,23],[2024,4,4,16,2],[2024,5,5,9,10],[2024,6,5,13,10],[2024,7,6,23,20],[2024,8,7,9,9],[2024,9,7,12,11],[2024,10,8,4,0],[2024,11,7,7,20],[2024,12,7,0,17],
+  [2025,1,5,11,33],[2025,2,3,23,10],[2025,3,5,17,7],[2025,4,4,21,49],[2025,5,5,14,57],[2025,6,5,18,57],[2025,7,7,5,5],[2025,8,7,14,52],[2025,9,7,17,52],[2025,10,8,9,41],[2025,11,7,13,4],[2025,12,7,6,5],
+  [2026,1,5,17,26],
+  [2026,2,4,5,5],
+  [2026,3,5,23,2],
+  [2026,4,5,3,42],
+  [2026,5,5,20,51],
+  [2026,6,6,0,51],
+  [2026,7,7,11,0],
+  [2026,8,7,20,47],
+  [2026,9,7,23,45],
+  [2026,10,8,15,33],
+  [2026,11,7,18,55],
+  [2026,12,7,11,56],
+  [2027,1,5,23,14],
+  [2027,2,4,10,51],
+  [2027,3,6,4,44],
+  [2027,4,5,9,22],
+  [2027,5,6,2,29],
+  [2027,6,6,6,31],
+  [2027,7,7,16,43],
+  [2027,8,8,2,32],
+  [2027,9,8,5,34],
+  [2027,10,8,21,22],
+  [2027,11,8,0,44],
+  [2027,12,7,17,43],
+  [2028,1,6,5,1],
+  [2028,2,4,16,37],
+  [2028,3,5,10,31],
+  [2028,4,4,15,9],
+  [2028,5,5,8,18],
+  [2028,6,5,12,22],
+  [2028,7,6,22,37],
+  [2028,8,7,8,28],
+  [2028,9,7,11,29],
+  [2028,10,8,3,15],
+  [2028,11,7,6,33],
+  [2028,12,6,23,31],
+  [2029,1,5,10,49],
+  [2029,2,3,22,28],
+  [2029,3,5,16,25],
+  [2029,4,4,21,5],
+  [2029,5,5,14,14],
+  [2029,6,5,18,17],
+  [2029,7,7,4,30],
+  [2029,8,7,14,19],
+  [2029,9,7,17,19],
+  [2029,10,8,9,5],
+  [2029,11,7,12,23],
+  [2029,12,7,5,20],
+  [2030,1,5,16,38],
+  [2030,2,4,4,16],
+  [2030,3,5,22,11],
+  [2030,4,5,2,48],
+  [2030,5,5,19,53],
+  [2030,6,5,23,51],
+  [2030,7,7,10,3],
+  [2030,8,7,19,55],
+  [2030,9,7,23,0],
+  [2030,10,8,14,52],
+  [2030,11,7,18,15],
+  [2030,12,7,11,14],
+  [2031,1,5,22,30],
+  [2031,2,4,10,5],
+  [2031,3,6,3,58],
+  [2031,4,5,8,34],
+  [2031,5,6,1,41],
+  [2031,6,6,5,41],
+  [2031,7,7,15,55],
+  [2031,8,8,1,49],
+  [2031,9,8,4,56],
+  [2031,10,8,20,48],
+  [2031,11,8,0,10],
+  [2031,12,7,17,8],
+  [2032,1,6,4,21],
+  [2032,2,4,15,54],
+  [2032,3,5,9,45],
+  [2032,4,4,14,22],
+  [2032,5,5,7,30],
+  [2032,6,5,11,32],
+  [2032,7,6,21,45],
+  [2032,8,7,7,37],
+  [2032,9,7,10,42],
+  [2032,10,8,2,34],
+  [2032,11,7,5,57],
+  [2032,12,6,22,56],
+  [2033,1,5,10,12],
+  [2033,2,3,21,45],
+  [2033,3,5,15,35],
+  [2033,4,4,20,11],
+  [2033,5,5,13,16],
+  [2033,6,5,17,15],
+  [2033,7,7,3,27],
+  [2033,8,7,13,18],
+  [2033,9,7,16,22],
+  [2033,10,8,8,15],
+  [2033,11,7,11,42],
+  [2033,12,7,4,46],
+  [2034,1,5,16,6],
+  [2034,2,4,3,43],
+  [2034,3,5,21,33],
+  [2034,4,5,2,6],
+  [2034,5,5,19,9],
+  [2034,6,5,23,6],
+  [2034,7,7,9,17],
+  [2034,8,7,19,9],
+  [2034,9,7,22,13],
+  [2034,10,8,14,6],
+  [2034,11,7,17,32],
+  [2034,12,7,10,35],
+  [2035,1,5,21,55],
+  [2035,2,4,9,30],
+  [2035,3,6,3,20],
+  [2035,4,5,7,52],
+  [2035,5,6,0,52],
+  [2035,6,6,4,48],
+  [2035,7,7,14,59],
+  [2035,8,8,0,52],
+  [2035,9,8,3,59],
+  [2035,10,8,19,54],
+  [2035,11,7,23,20],
+  [2035,12,7,16,22],
+  [2036,1,6,3,40],
+  [2036,2,4,15,17],
+  [2036,3,5,9,8],
+  [2036,4,4,13,42],
+  [2036,5,5,6,44],
+  [2036,6,5,10,42],
+  [2036,7,6,20,53],
+  [2036,8,7,6,44],
+  [2036,9,7,9,50],
+  [2036,10,8,1,43],
+  [2036,11,7,5,9],
+  [2036,12,6,22,11],
+  [2037,1,5,9,29],
+  [2037,2,3,21,7],
+  [2037,3,5,15,1],
+  [2037,4,4,19,38],
+  [2037,5,5,12,43],
+  [2037,6,5,16,40],
+  [2037,7,7,2,49],
+  [2037,8,7,12,37],
+  [2037,9,7,15,39],
+  [2037,10,8,7,31],
+  [2037,11,7,10,57],
+  [2037,12,7,4,1],
+  [2038,1,5,15,21],
+  [2038,2,4,2,58],
+  [2038,3,5,20,49],
+  [2038,4,5,1,22],
+  [2038,5,5,18,23],
+  [2038,6,5,22,18],
+  [2038,7,7,8,25],
+  [2038,8,7,18,14],
+  [2038,9,7,21,19],
+  [2038,10,8,13,14],
+  [2038,11,7,16,43],
+  [2038,12,7,9,49],
+  [2039,1,5,21,10],
+  [2039,2,4,8,47],
+  [2039,3,6,2,36],
+  [2039,4,5,7,9],
+  [2039,5,6,0,10],
+  [2039,6,6,4,8],
+  [2039,7,7,14,19],
+  [2039,8,8,0,11],
+  [2039,9,8,3,17],
+  [2039,10,8,19,10],
+  [2039,11,7,22,36],
+  [2039,12,7,15,38],
+  [2040,1,6,2,57],
+  [2040,2,4,14,34],
+  [2040,3,5,8,25],
+  [2040,4,4,12,59],
+  [2040,5,5,6,2],
+  [2040,6,5,10,1],
+  [2040,7,6,20,13],
+  [2040,8,7,6,4],
+  [2040,9,7,9,8],
+  [2040,10,8,0,59],
+  [2040,11,7,4,23],
+  [2040,12,6,21,24],
+  [2041,1,5,8,43],
+  [2041,2,3,20,21],
+  [2041,3,5,14,13],
+  [2041,4,4,18,47],
+  [2041,5,5,11,49],
+  [2041,6,5,15,44],
+  [2041,7,7,1,54],
+  [2041,8,7,11,44],
+  [2041,9,7,14,49],
+  [2041,10,8,6,42],
+  [2041,11,7,10,8],
+  [2041,12,7,3,12],
+  [2042,1,5,14,32],
+  [2042,2,4,2,10],
+  [2042,3,5,20,3],
+  [2042,4,5,0,37],
+  [2042,5,5,17,39],
+  [2042,6,5,21,35],
+  [2042,7,7,7,45],
+  [2042,8,7,17,36],
+  [2042,9,7,20,43],
+  [2042,10,8,12,38],
+  [2042,11,7,16,5],
+  [2042,12,7,9,7],
+  [2043,1,5,20,24],
+  [2043,2,4,7,58],
+  [2043,3,6,1,47],
+  [2043,4,5,6,19],
+  [2043,5,5,23,20],
+  [2043,6,6,3,17],
+  [2043,7,7,13,27],
+  [2043,8,7,23,21],
+  [2043,9,8,2,30],
+  [2043,10,8,18,27],
+  [2043,11,7,21,55],
+  [2043,12,7,14,58],
+  [2044,1,6,2,13],
+  [2044,2,4,13,45],
+  [2044,3,5,7,33],
+  [2044,4,4,12,4],
+  [2044,5,5,5,6],
+  [2044,6,5,9,5],
+  [2044,7,6,19,18],
+  [2044,8,7,5,11],
+  [2044,9,7,8,19],
+  [2044,10,8,0,15],
+  [2044,11,7,3,44],
+  [2044,12,6,20,47],
+  [2045,1,5,8,6],
+  [2045,2,3,19,40],
+  [2045,3,5,13,28],
+  [2045,4,4,18,0],
+  [2045,5,5,11,2],
+  [2045,6,5,15,0],
+  [2045,7,7,1,12],
+  [2045,8,7,11,4],
+  [2045,9,7,14,10],
+  [2045,10,8,6,5],
+  [2045,11,7,9,33],
+  [2045,12,7,2,40],
+  [2046,1,5,14,1],
+  [2046,2,4,1,36],
+  [2046,3,5,19,23],
+  [2046,4,4,23,50],
+  [2046,5,5,16,45],
+  [2046,6,5,20,37],
+  [2046,7,7,6,46],
+  [2046,8,7,16,39],
+  [2046,9,7,19,49],
+  [2046,10,8,11,48],
+  [2046,11,7,15,19],
+  [2046,12,7,8,27],
+  [2047,1,5,19,48],
+  [2047,2,4,7,24],
+  [2047,3,6,1,12],
+  [2047,4,5,5,39],
+  [2047,5,5,22,34],
+  [2047,6,6,2,27],
+  [2047,7,7,12,37],
+  [2047,8,7,22,33],
+  [2047,9,8,1,45],
+  [2047,10,8,17,44],
+  [2047,11,7,21,13],
+  [2047,12,7,14,17],
+  [2048,1,6,1,36],
+  [2048,2,4,13,12],
+  [2048,3,5,7,1],
+  [2048,4,4,11,32],
+  [2048,5,5,4,31],
+  [2048,6,5,8,25],
+  [2048,7,6,18,34],
+  [2048,8,7,4,26],
+  [2048,9,7,7,35],
+  [2048,10,7,23,33],
+  [2048,11,7,3,3],
+  [2048,12,6,20,7],
+  [2049,1,5,7,25],
+  [2049,2,3,19,0],
+  [2049,3,5,12,50],
+  [2049,4,4,17,20],
+  [2049,5,5,10,19],
+  [2049,6,5,14,10],
+  [2049,7,7,0,15],
+  [2049,8,7,10,4],
+  [2049,9,7,13,12],
+  [2049,10,8,5,11],
+  [2049,11,7,8,44],
+  [2049,12,7,1,52],
+  [2050,1,5,13,14],
+  [2050,2,4,0,50],
+  [2050,3,5,18,39],
+  [2050,4,4,23,8],
+  [2050,5,5,16,7],
+  [2050,6,5,20,0],
+  [2050,7,7,6,7],
+  [2050,8,7,15,58],
+  [2050,9,7,19,6],
+  [2050,10,8,11,4],
+  [2050,11,7,14,37],
+  [2050,12,7,7,46],
+  [2051,1,5,19,6],
+  [2051,2,4,6,40],
+  [2051,3,6,0,26],
+  [2051,4,5,4,53],
+  [2051,5,5,21,50],
+  [2051,6,6,1,44],
+  [2051,7,7,11,53],
+  [2051,8,7,21,45],
+  [2051,9,8,0,54],
+  [2051,10,8,16,53],
+  [2051,11,7,20,24],
+  [2051,12,7,13,31],
+  [2052,1,6,0,51],
+  [2052,2,4,12,25],
+  [2052,3,5,6,11],
+  [2052,4,4,10,38],
+  [2052,5,5,3,36],
+  [2052,6,5,7,30],
+  [2052,7,6,17,41],
+  [2052,8,7,3,34],
+  [2052,9,7,6,43],
+  [2052,10,7,22,40],
+  [2052,11,7,2,9],
+  [2052,12,6,19,15],
+  [2053,1,5,6,36],
+  [2053,2,3,18,13],
+  [2053,3,5,12,3],
+  [2053,4,4,16,33],
+  [2053,5,5,9,32],
+  [2053,6,5,13,26],
+  [2053,7,6,23,36],
+  [2053,8,7,9,28],
+  [2053,9,7,12,37],
+  [2053,10,8,4,34],
+  [2053,11,7,8,3],
+  [2053,12,7,1,9],
+  [2054,1,5,12,30],
+  [2054,2,4,0,6],
+  [2054,3,5,17,53],
+  [2054,4,4,22,20],
+  [2054,5,5,15,14],
+  [2054,6,5,19,3],
+  [2054,7,7,5,10],
+  [2054,8,7,15,3],
+  [2054,9,7,18,15],
+  [2054,10,8,10,18],
+  [2054,11,7,13,51],
+  [2054,12,7,6,59],
+  [2055,1,5,18,18],
+  [2055,2,4,5,52],
+  [2055,3,5,23,37],
+  [2055,4,5,4,3],
+  [2055,5,5,20,58],
+  [2055,6,6,0,50],
+  [2055,7,7,10,59],
+  [2055,8,7,20,55],
+  [2055,9,8,0,10],
+  [2055,10,8,16,13],
+  [2055,11,7,19,46],
+  [2055,12,7,12,52],
+  [2056,1,6,0,10],
+  [2056,2,4,11,41],
+  [2056,3,5,5,26],
+  [2056,4,4,9,53],
+  [2056,5,5,2,51],
+  [2056,6,5,6,45],
+  [2056,7,6,16,55],
+  [2056,8,7,2,49],
+  [2056,9,7,6,0],
+  [2056,10,7,22,2],
+  [2056,11,7,1,36],
+  [2056,12,6,18,44],
+  [2057,1,5,6,3],
+  [2057,2,3,17,36],
+  [2057,3,5,11,20],
+  [2057,4,4,15,45],
+  [2057,5,5,8,39],
+  [2057,6,5,12,28],
+  [2057,7,6,22,35],
+  [2057,8,7,8,27],
+  [2057,9,7,11,37],
+  [2057,10,8,3,39],
+  [2057,11,7,7,15],
+  [2057,12,7,0,27],
+  [2058,1,5,11,52],
+  [2058,2,3,23,28],
+  [2058,3,5,17,13],
+  [2058,4,4,21,37],
+  [2058,5,5,14,28],
+  [2058,6,5,18,17],
+  [2058,7,7,4,24],
+  [2058,8,7,14,19],
+  [2058,9,7,17,31],
+  [2058,10,8,9,34],
+  [2058,11,7,13,10],
+  [2058,12,7,6,21],
+  [2059,1,5,17,43],
+  [2059,2,4,5,18],
+  [2059,3,5,23,3],
+  [2059,4,5,3,26],
+  [2059,5,5,20,17],
+  [2059,6,6,0,6],
+  [2059,7,7,10,13],
+  [2059,8,7,20,7],
+  [2059,9,7,23,21],
+  [2059,10,8,15,25],
+  [2059,11,7,19,0],
+  [2059,12,7,12,8],
+  [2060,1,5,23,29],
+  [2060,2,4,11,4],
+  [2060,3,5,4,50],
+  [2060,4,4,9,15],
+  [2060,5,5,2,8],
+  [2060,6,5,5,57],
+  [2060,7,6,16,3],
+  [2060,8,7,1,55],
+  [2060,9,7,5,7],
+  [2060,10,7,21,9],
+  [2060,11,7,0,45],
+  [2060,12,6,17,54],
+  [2061,1,5,5,16],
+  [2061,2,3,16,51],
+  [2061,3,5,10,39],
+  [2061,4,4,15,7],
+  [2061,5,5,8,3],
+  [2061,6,5,11,54],
+  [2061,7,6,22,0],
+  [2061,8,7,7,51],
+  [2061,9,7,11,1],
+  [2061,10,8,3,2],
+  [2061,11,7,6,38],
+  [2061,12,6,23,49],
+  [2062,1,5,11,12],
+  [2062,2,3,22,47],
+  [2062,3,5,16,31],
+  [2062,4,4,20,55],
+  [2062,5,5,13,47],
+  [2062,6,5,17,34],
+  [2062,7,7,3,39],
+  [2062,8,7,13,30],
+  [2062,9,7,16,41],
+  [2062,10,8,8,45],
+  [2062,11,7,12,23],
+  [2062,12,7,5,35],
+  [2063,1,5,16,59],
+  [2063,2,4,4,33],
+  [2063,3,5,22,16],
+  [2063,4,5,2,38],
+  [2063,5,5,19,30],
+  [2063,6,5,23,19],
+  [2063,7,7,9,28],
+  [2063,8,7,19,23],
+  [2063,9,7,22,36],
+  [2063,10,8,14,39],
+  [2063,11,7,18,14],
+  [2063,12,7,11,24],
+  [2064,1,5,22,45],
+  [2064,2,4,10,19],
+  [2064,3,5,4,3],
+  [2064,4,4,8,28],
+  [2064,5,5,1,22],
+  [2064,6,5,5,14],
+  [2064,7,6,15,24],
+  [2064,8,7,1,19],
+  [2064,9,7,4,31],
+  [2064,10,7,20,32],
+  [2064,11,7,0,6],
+  [2064,12,6,17,14],
+  [2065,1,5,4,35],
+  [2065,2,3,16,9],
+  [2065,3,5,9,55],
+  [2065,4,4,14,19],
+  [2065,5,5,7,10],
+  [2065,6,5,10,58],
+  [2065,7,6,21,3],
+  [2065,8,7,6,56],
+  [2065,9,7,10,8],
+  [2065,10,8,2,12],
+  [2065,11,7,5,48],
+  [2065,12,6,22,59],
+  [2066,1,5,10,21],
+  [2066,2,3,21,56],
+  [2066,3,5,15,41],
+  [2066,4,4,20,4],
+  [2066,5,5,12,55],
+  [2066,6,5,16,42],
+  [2066,7,7,2,49],
+  [2066,8,7,12,44],
+  [2066,9,7,16,0],
+  [2066,10,8,8,7],
+  [2066,11,7,11,45],
+  [2066,12,7,4,55],
+  [2067,1,5,16,14],
+  [2067,2,4,3,44],
+  [2067,3,5,21,25],
+  [2067,4,5,1,47],
+  [2067,5,5,18,38],
+  [2067,6,5,22,28],
+  [2067,7,7,8,36],
+  [2067,8,7,18,32],
+  [2067,9,7,21,49],
+  [2067,10,8,13,57],
+  [2067,11,7,17,36],
+  [2067,12,7,10,46],
+  [2068,1,5,22,6],
+  [2068,2,4,9,36],
+  [2068,3,5,3,15],
+  [2068,4,4,7,35],
+  [2068,5,5,0,26],
+  [2068,6,5,4,15],
+  [2068,7,6,14,23],
+  [2068,8,7,0,17],
+  [2068,9,7,3,31],
+  [2068,10,7,19,38],
+  [2068,11,6,23,18],
+  [2068,12,6,16,31],
+  [2069,1,5,3,53],
+  [2069,2,3,15,26],
+  [2069,3,5,9,8],
+  [2069,4,4,13,28],
+  [2069,5,5,6,19],
+  [2069,6,5,10,7],
+  [2069,7,6,20,15],
+  [2069,8,7,6,10],
+  [2069,9,7,9,25],
+  [2069,10,8,1,30],
+  [2069,11,7,5,10],
+  [2069,12,6,22,25],
+  [2070,1,5,9,51],
+  [2070,2,3,21,25],
+  [2070,3,5,15,6],
+  [2070,4,4,19,22],
+  [2070,5,5,12,7],
+  [2070,6,5,15,50],
+  [2070,7,7,1,54],
+  [2070,8,7,11,49],
+  [2070,9,7,15,6],
+  [2070,10,8,7,14],
+  [2070,11,7,10,56],
+  [2070,12,7,4,12],
+  [2071,1,5,15,37],
+  [2071,2,4,3,12],
+  [2071,3,5,20,53],
+  [2071,4,5,1,11],
+  [2071,5,5,17,55],
+  [2071,6,5,21,38],
+  [2071,7,7,7,43],
+  [2071,8,7,17,39],
+  [2071,9,7,20,57],
+  [2071,10,8,13,7],
+  [2071,11,7,16,47],
+  [2071,12,7,9,59],
+  [2072,1,5,21,22],
+  [2072,2,4,8,56],
+  [2072,3,5,2,40],
+  [2072,4,4,7,1],
+  [2072,5,4,23,51],
+  [2072,6,5,3,37],
+  [2072,7,6,13,43],
+  [2072,8,6,23,37],
+  [2072,9,7,2,52],
+  [2072,10,7,19,0],
+  [2072,11,6,22,40],
+  [2072,12,6,15,53],
+  [2073,1,5,3,16],
+  [2073,2,3,14,50],
+  [2073,3,5,8,33],
+  [2073,4,4,12,55],
+  [2073,5,5,5,43],
+  [2073,6,5,9,25],
+  [2073,7,6,19,26],
+  [2073,8,7,5,16],
+  [2073,9,7,8,28],
+  [2073,10,8,0,36],
+  [2073,11,7,4,18],
+  [2073,12,6,21,35],
+  [2074,1,5,9,1],
+  [2074,2,3,20,36],
+  [2074,3,5,14,19],
+  [2074,4,4,18,39],
+  [2074,5,5,11,26],
+  [2074,6,5,15,11],
+  [2074,7,7,1,14],
+  [2074,8,7,11,7],
+  [2074,9,7,14,22],
+  [2074,10,8,6,30],
+  [2074,11,7,10,12],
+  [2074,12,7,3,28],
+  [2075,1,5,14,52],
+  [2075,2,4,2,24],
+  [2075,3,5,20,5],
+  [2075,4,5,0,24],
+  [2075,5,5,17,12],
+  [2075,6,5,20,59],
+  [2075,7,7,7,6],
+  [2075,8,7,17,1],
+  [2075,9,7,20,17],
+  [2075,10,8,12,24],
+  [2075,11,7,16,4],
+  [2075,12,7,9,17],
+  [2076,1,5,20,40],
+  [2076,2,4,8,13],
+  [2076,3,5,1,54],
+  [2076,4,4,6,13],
+  [2076,5,4,23,0],
+  [2076,6,5,2,47],
+  [2076,7,6,12,53],
+  [2076,8,6,22,47],
+  [2076,9,7,2,2],
+  [2076,10,7,18,7],
+  [2076,11,6,21,46],
+  [2076,12,6,14,58],
+  [2077,1,5,2,22],
+  [2077,2,3,13,57],
+  [2077,3,5,7,40],
+  [2077,4,4,12,2],
+  [2077,5,5,4,50],
+  [2077,6,5,8,37],
+  [2077,7,6,18,44],
+  [2077,8,7,4,40],
+  [2077,9,7,7,56],
+  [2077,10,8,0,4],
+  [2077,11,7,3,43],
+  [2077,12,6,20,56],
+  [2078,1,5,8,19],
+  [2078,2,3,19,52],
+  [2078,3,5,13,32],
+  [2078,4,4,17,50],
+  [2078,5,5,10,35],
+  [2078,6,5,14,19],
+  [2078,7,7,0,23],
+  [2078,8,7,10,19],
+  [2078,9,7,13,39],
+  [2078,10,8,5,50],
+  [2078,11,7,9,34],
+  [2078,12,7,2,48],
+  [2079,1,5,14,9],
+  [2079,2,4,1,40],
+  [2079,3,5,19,17],
+  [2079,4,4,23,33],
+  [2079,5,5,16,18],
+  [2079,6,5,20,2],
+  [2079,7,7,6,8],
+  [2079,8,7,16,6],
+  [2079,9,7,19,27],
+  [2079,10,8,11,40],
+  [2079,11,7,15,24],
+  [2079,12,7,8,37],
+  [2080,1,5,19,57],
+  [2080,2,4,7,26],
+  [2080,3,5,1,3],
+  [2080,4,4,5,20],
+  [2080,5,4,22,8],
+  [2080,6,5,1,56],
+  [2080,7,6,12,4],
+  [2080,8,6,22,2],
+  [2080,9,7,1,21],
+  [2080,10,7,17,33],
+  [2080,11,6,21,18],
+  [2080,12,6,14,33],
+  [2081,1,5,1,56],
+  [2081,2,3,13,26],
+  [2081,3,5,7,3],
+  [2081,4,4,11,17],
+  [2081,5,5,4,0],
+  [2081,6,5,7,41],
+  [2081,7,6,17,45],
+  [2081,8,7,3,39],
+  [2081,9,7,6,56],
+  [2081,10,7,23,8],
+  [2081,11,7,2,54],
+  [2081,12,6,20,13],
+  [2082,1,5,7,41],
+  [2082,2,3,19,15],
+  [2082,3,5,12,53],
+  [2082,4,4,17,5],
+  [2082,5,5,9,45],
+  [2082,6,5,13,25],
+  [2082,7,6,23,28],
+  [2082,8,7,9,25],
+  [2082,9,7,12,46],
+  [2082,10,8,5,1],
+  [2082,11,7,8,47],
+  [2082,12,7,2,5],
+  [2083,1,5,13,30],
+  [2083,2,4,1,3],
+  [2083,3,5,18,41],
+  [2083,4,4,22,54],
+  [2083,5,5,15,36],
+  [2083,6,5,19,17],
+  [2083,7,7,5,21],
+  [2083,8,7,15,18],
+  [2083,9,7,18,40],
+  [2083,10,8,10,54],
+  [2083,11,7,14,40],
+  [2083,12,7,7,57],
+  [2084,1,5,19,21],
+  [2084,2,4,6,53],
+  [2084,3,5,0,31],
+  [2084,4,4,4,46],
+  [2084,5,4,21,28],
+  [2084,6,5,1,8],
+  [2084,7,6,11,10],
+  [2084,8,6,21,3],
+  [2084,9,7,0,21],
+  [2084,10,7,16,33],
+  [2084,11,6,20,19],
+  [2084,12,6,13,37],
+  [2085,1,5,1,3],
+  [2085,2,3,12,37],
+  [2085,3,5,6,17],
+  [2085,4,4,10,35],
+  [2085,5,5,3,19],
+  [2085,6,5,7,1],
+  [2085,7,6,17,3],
+  [2085,8,7,2,57],
+  [2085,9,7,6,14],
+  [2085,10,7,22,27],
+  [2085,11,7,2,13],
+  [2085,12,6,19,33],
+  [2086,1,5,7,0],
+  [2086,2,3,18,33],
+  [2086,3,5,12,10],
+  [2086,4,4,16,24],
+  [2086,5,5,9,5],
+  [2086,6,5,12,45],
+  [2086,7,6,22,46],
+  [2086,8,7,8,40],
+  [2086,9,7,11,59],
+  [2086,10,8,4,13],
+  [2086,11,7,8,1],
+  [2086,12,7,1,21],
+  [2087,1,5,12,48],
+  [2087,2,4,0,21],
+  [2087,3,5,17,58],
+  [2087,4,4,22,10],
+  [2087,5,5,14,50],
+  [2087,6,5,18,30],
+  [2087,7,7,4,33],
+  [2087,8,7,14,30],
+  [2087,9,7,17,49],
+  [2087,10,8,10,2],
+  [2087,11,7,13,47],
+  [2087,12,7,7,4],
+  [2088,1,5,18,30],
+  [2088,2,4,6,3],
+  [2088,3,4,23,41],
+  [2088,4,4,3,56],
+  [2088,5,4,20,40],
+  [2088,6,5,0,23],
+  [2088,7,6,10,30],
+  [2088,8,6,20,27],
+  [2088,9,6,23,47],
+  [2088,10,7,15,59],
+  [2088,11,6,19,43],
+  [2088,12,6,12,59],
+  [2089,1,5,0,24],
+  [2089,2,3,11,57],
+  [2089,3,5,5,37],
+  [2089,4,4,9,52],
+  [2089,5,5,2,33],
+  [2089,6,5,6,11],
+  [2089,7,6,16,12],
+  [2089,8,7,2,6],
+  [2089,9,7,5,25],
+  [2089,10,7,21,38],
+  [2089,11,7,1,25],
+  [2089,12,6,18,43],
+  [2090,1,5,6,9],
+  [2090,2,3,17,43],
+  [2090,3,5,11,21],
+  [2090,4,4,15,35],
+  [2090,5,5,8,15],
+  [2090,6,5,11,54],
+  [2090,7,6,21,55],
+  [2090,8,7,7,52],
+  [2090,9,7,11,14],
+  [2090,10,8,3,32],
+  [2090,11,7,7,20],
+  [2090,12,7,0,37],
+  [2091,1,5,12,0],
+  [2091,2,3,23,29],
+  [2091,3,5,17,4],
+  [2091,4,4,21,17],
+  [2091,5,5,13,59],
+  [2091,6,5,17,42],
+  [2091,7,7,3,47],
+  [2091,8,7,13,46],
+  [2091,9,7,17,10],
+  [2091,10,8,9,27],
+  [2091,11,7,13,16],
+  [2091,12,7,6,34],
+  [2092,1,5,17,57],
+  [2092,2,4,5,25],
+  [2092,3,4,22,58],
+  [2092,4,4,3,9],
+  [2092,5,4,19,50],
+  [2092,6,4,23,32],
+  [2092,7,6,9,35],
+  [2092,8,6,19,31],
+  [2092,9,6,22,50],
+  [2092,10,7,15,5],
+  [2092,11,6,18,54],
+  [2092,12,6,12,15],
+  [2093,1,4,23,41],
+  [2093,2,3,11,13],
+  [2093,3,5,4,48],
+  [2093,4,4,8,59],
+  [2093,5,5,1,39],
+  [2093,6,5,5,19],
+  [2093,7,6,15,24],
+  [2093,8,7,1,21],
+  [2093,9,7,4,43],
+  [2093,10,7,20,59],
+  [2093,11,7,0,48],
+  [2093,12,6,18,10],
+  [2094,1,5,5,38],
+  [2094,2,3,17,11],
+  [2094,3,5,10,44],
+  [2094,4,4,14,52],
+  [2094,5,5,7,28],
+  [2094,6,5,11,4],
+  [2094,7,6,21,6],
+  [2094,8,7,7,4],
+  [2094,9,7,10,29],
+  [2094,10,8,2,47],
+  [2094,11,7,6,39],
+  [2094,12,7,0,0],
+  [2095,1,5,11,28],
+  [2095,2,3,23,0],
+  [2095,3,5,16,35],
+  [2095,4,4,20,43],
+  [2095,5,5,13,18],
+  [2095,6,5,16,53],
+  [2095,7,7,2,54],
+  [2095,8,7,12,51],
+  [2095,9,7,16,16],
+  [2095,10,8,8,35],
+  [2095,11,7,12,25],
+  [2095,12,7,5,45],
+  [2096,1,5,17,9],
+  [2096,2,4,4,41],
+  [2096,3,4,22,17],
+  [2096,4,4,2,29],
+  [2096,5,4,19,8],
+  [2096,6,4,22,47],
+  [2096,7,6,8,50],
+  [2096,8,6,18,47],
+  [2096,9,6,22,11],
+  [2096,10,7,14,29],
+  [2096,11,6,18,20],
+  [2096,12,6,11,40],
+  [2097,1,4,23,6],
+  [2097,2,3,10,37],
+  [2097,3,5,4,13],
+  [2097,4,4,8,25],
+  [2097,5,5,1,2],
+  [2097,6,5,4,38],
+  [2097,7,6,14,36],
+  [2097,8,7,0,29],
+  [2097,9,7,3,48],
+  [2097,10,7,20,6],
+  [2097,11,6,23,59],
+  [2097,12,6,17,24],
+  [2098,1,5,4,53],
+  [2098,2,3,16,26],
+  [2098,3,5,10,1],
+  [2098,4,4,14,10],
+  [2098,5,5,6,45],
+  [2098,6,5,10,20],
+  [2098,7,6,20,19],
+  [2098,8,7,6,14],
+  [2098,9,7,9,36],
+  [2098,10,8,1,55],
+  [2098,11,7,5,48],
+  [2098,12,6,23,11],
+  [2099,1,5,10,38],
+  [2099,2,3,22,9],
+  [2099,3,5,15,42],
+  [2099,4,4,19,50],
+  [2099,5,5,12,27],
+  [2099,6,5,16,7],
+  [2099,7,7,2,11],
+  [2099,8,7,12,10],
+  [2099,9,7,15,34],
+  [2099,10,8,7,52],
+  [2099,11,7,11,42],
+  [2099,12,7,5,3],
+  [2100,1,5,16,30],
+  [2100,2,4,4,2],
+  [2100,3,5,21,36],
+  [2100,4,5,1,45],
+  [2100,5,5,18,22],
+  [2100,6,5,21,59],
+  [2100,7,7,8,1],
+  [2100,8,7,17,56],
+  [2100,9,7,21,17],
+  [2100,10,8,13,33],
+  [2100,11,7,17,22],
+  [2100,12,7,10,42],
+];
+
+
+const KINJISA = [
+  // 1月
+  [-3,-4,-4,-5,-5,-6,-6,-6,-7,-7,-8,-8,-8,-9,-9,-10,-10,-10,-11,-11,-11,-11,-12,-12,-12,-13,-13,-13,-13,-13,-13],
+  // 2月
+  [-13,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-14,-13,-13,-13,-13,-13,-13,null,null],
+  // 3月
+  [-12,-12,-12,-12,-11,-11,-11,-11,-10,-10,-10,-9,-9,-9,-8,-8,-7,-7,-7,-6,-6,-6,-5,-5,-5,-4,-4,-4,-3,-3,-2],
+  // 4月
+  [-2,-2,-1,-1,0,0,1,1,2,2,2,3,3,4,4,4,5,5,5,5,6,6,6,6,6,6,6,6,6,6,null],
+  // 5月
+  [6,6,6,6,6,6,5,5,5,5,5,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,3,3,3,3,2],
+  // 6月
+  [2,2,1,1,0,0,0,-1,-1,-2,-2,-2,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,null],
+  // 7月
+  [-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-4,-4,-4,-4,-4,-4,-4,-5,-5,-6,-6],
+  // 8月
+  [-6,-6,-6,-5,-5,-5,-5,-5,-5,-5,-4,-4,-4,-3,-3,-3,-2,-2,-2,-1,-1,-1,0,0,0,1,1,2,2,2,3],
+  // 9月
+  [3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15,16,16,16,16,16,null],
+  // 10月
+  [16,16,16,16,16,16,16,16,16,16,15,15,14,14,14,15,15,15,15,15,15,16,16,16,16,16,16,16,16,16,16],
+  // 11月
+  [16,16,16,16,15,15,15,15,14,14,14,13,13,12,12,12,11,11,10,10,9,9,8,8,7,7,6,6,5,4,null],
+  // 12月
+  [4,3,2,1,0,-1,-2,-2,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3]
+];
+
+
+// 八理図オリジナル蔵干（上・中・下）
+// 地支index: 0=子,1=丑,2=寅,3=卯,4=辰,5=巳,6=午,7=未,8=申,9=酉,10=戌,11=亥
+// 天干index: 0=甲,1=乙,2=丙,3=丁,4=戊,5=己,6=庚,7=辛,8=壬,9=癸, -1=空き
+const ZOKAN_HARIRIZU = [
+  [8, -1, 9],   // 子: 壬・空・癸
+  [9,  7, 5],   // 丑: 癸・辛・己
+  [4,  2, 0],   // 寅: 戊・丙・甲
+  [0, -1, 1],   // 卯: 甲・空・乙
+  [1,  9, 4],   // 辰: 乙・癸・戊
+  [4,  6, 2],   // 巳: 戊・庚・丙
+  [2,  5, 3],   // 午: 丙・己・丁
+  [3,  1, 5],   // 未: 丁・乙・己
+  [4,  8, 6],   // 申: 戊・壬・庚
+  [6, -1, 7],   // 酉: 庚・空・辛
+  [7,  3, 4],   // 戌: 辛・丁・戊
+  [4,  0, 8],   // 亥: 戊・甲・壬
+];
+
+// 八理図アイコン・名前
+const KAN_DATA = {
+  '甲':{ icon:'🌳', name:'木', bg:'linear-gradient(135deg,#66bb6a,#2e7d32)' },
+  '乙':{ icon:'🌼', name:'草花', bg:'linear-gradient(135deg,#f48fb1,#c2185b)' },
+  '丙':{ icon:'☀️', name:'太陽', bg:'linear-gradient(135deg,#ffb74d,#e65100)' },
+  '丁':{ icon:'🕯️', name:'灯火', bg:'linear-gradient(135deg,#ff8a65,#bf360c)' },
+  '戊':{ icon:'🗻', name:'山', bg:'linear-gradient(135deg,#a1887f,#4e342e)' },
+  '己':{ icon:'🌾', name:'畑', bg:'linear-gradient(135deg,#ffca28,#ff8f00)' },
+  '庚':{ icon:'⚔️', name:'剣', bg:'linear-gradient(135deg,#90a4ae,#37474f)' },
+  '辛':{ icon:'💎', name:'宝石', bg:'linear-gradient(135deg,#80deea,#00838f)' },
+  '壬':{ icon:'🌊', name:'河', bg:'linear-gradient(135deg,#64b5f6,#0d47a1)' },
+  '癸':{ icon:'🌧️', name:'霧雨', bg:'linear-gradient(135deg,#9fa8da,#283593)' },
+};
+
+// ===== 計算ロジック =====
+
+// 節入り検索（年・月に対応する節入り日時を返す）
+function getSetsuiri(year, month) {
+  for (let s of SETSUIRI) {
+    if (s[0] === year && s[1] === month) return s;
+  }
+  return null;
+}
+
+// 節入りを考慮して月柱のための「暦上の月・年」を求める
+function getMonthForCalc(year, month, day, hour, minute) {
+  const s = getSetsuiri(year, month);
+  if (!s) return { year, month };
+  const setsuDate = s[2], setsuHour = s[3], setsuMin = s[4];
+
+  // 日・時・分を全部分に換算して正確に比較
+  const birthTotal = day * 1440 + hour * 60 + minute;
+  const setsuTotal = setsuDate * 1440 + setsuHour * 60 + setsuMin;
+
+  // 節入り前なら前月扱い
+  if (birthTotal < setsuTotal) {
+    let m = month - 1, y = year;
+    if (m === 0) { m = 12; y--; }
+    return { year: y, month: m };
+  }
+  return { year, month };
+}
+
+// 年柱計算
+function calcYearPillar(year, month, day, hour, minute) {
+  // 1月・2月は前年の寅月前なので前年扱い（節入り考慮済み）
+  const { year: adjY } = getMonthForCalc(year, 1, day, hour, minute);
+  // 寅月（2月）の節入り前は前年
+  const s2 = getSetsuiri(year, 2);
+  let baseYear = year;
+  if (s2) {
+    const setsuDate = s2[2], setsuHour = s2[3], setsuMin = s2[4];
+    if (month === 1 || (month === 2 && (day < setsuDate || (day === setsuDate && (hour * 60 + minute) < (setsuHour * 60 + setsuMin))))) {
+      baseYear = year - 1;
+    }
+  }
+  const kanIdx = ((baseYear - 4) % 10 + 10) % 10;
+  const shiIdx = ((baseYear - 4) % 12 + 12) % 12;
+  return { kan: kanIdx, shi: shiIdx };
+}
+
+// 月柱計算（万年歴テーブル使用）
+function calcMonthPillar(year, month, day, hour, minute, yearKanIdx) {
+  const { year: adjY, month: adjM } = getMonthForCalc(year, month, day, hour, minute);
+  // 月インデックス（寅月=0、卯月=1...）
+  // 寅月は2月節入り後〜。月のインデックス: 1月→11(丑)、2月→0(寅)...
+  // 月テーブルのindex: 0=寅(2月後),1=卯,2=辰,3=巳,4=午,5=未,6=申,7=酉,8=戌,9=亥,10=子,11=丑
+  // 1月=子月=index10, 2月=寅月=index0(節入り後), ..., 11月=亥月=index9, 12月=子月=index10
+  // adjM-1 = テーブルのindex（丑月=0, 寅月=1...子月=11）
+  const mIdx = adjM - 1;
+  const row = MONTH_KANSHI[yearKanIdx];
+  return { kan: row[mIdx][0], shi: row[mIdx][1] };
+}
+
+// 日柱計算（ユリウス通日ベース・完全精度）
+function toJD(y, m, d) {
+  if (m <= 2) { y--; m += 12; }
+  const A = Math.floor(y / 100);
+  const B = 2 - A + Math.floor(A / 4);
+  return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524;
+}
+const DAY_BASE_JD = 2443691; // 基準日（検証済み）
+
+function calcDayPillar(year, month, day) {
+  const jd = toJD(year, month, day);
+  const diff = jd - DAY_BASE_JD;
+  const kanIdx = ((diff % 10) + 10) % 10;
+  const shiIdx = ((diff % 12) + 12) % 12;
+  return { kan: kanIdx, shi: shiIdx };
+}
+
+// 時柱計算（師匠の表に合わせた時間区切り）
+// 0:00-0:59=子, 1:00-2:59=丑, 3:00-4:59=寅, 5:00-6:59=卯
+// 7:00-8:59=辰, 9:00-10:59=巳, 11:00-12:59=午, 13:00-14:59=未
+// 15:00-16:59=申, 17:00-18:59=酉, 19:00-20:59=戌, 21:00-22:59=亥, 23:00-23:59=子
+function calcHourPillar(hour, dayKanIdx) {
+  let shiIdx;
+  if (hour === 23 || hour === 0) shiIdx = 0;
+  else shiIdx = Math.ceil(hour / 2);
+  // 時干：日干グループ×2 + 時支index
+  const TIME_KAN_BASE = [0, 2, 4, 6, 8]; // 甲己,乙庚,丙辛,丁壬,戊癸の子時の天干
+  const kanIdx = (TIME_KAN_BASE[dayKanIdx % 5] + shiIdx) % 10;
+  return { kan: kanIdx, shi: shiIdx };
+}
+
+// 八理図蔵干取得（上・中・下）
+function getZokan(shiIdx) {
+  return ZOKAN_HARIRIZU[shiIdx]; // [上, 中, 下]
+}
+
+function calculate() {
+  const errEl = document.getElementById('error-msg');
+  errEl.style.display = 'none';
+
+  const yVal = parseInt(document.getElementById('birth-y').value);
+  const mVal = parseInt(document.getElementById('birth-m').value);
+  const dVal = parseInt(document.getElementById('birth-d').value);
+  const birthH = document.getElementById('birth-h').value;
+  const birthMin2 = document.getElementById('birth-min').value;
+  const nameVal = document.getElementById('name').value || 'あなた';
+
+  if (!yVal || !mVal || !dVal) { errEl.textContent='生年月日を入力してください'; errEl.style.display='block'; return; }
+  if (yVal < 1926 || yVal > 2100) { errEl.textContent='対応年は1926年〜2100年です'; errEl.style.display='block'; return; }
+  if (mVal < 1 || mVal > 12) { errEl.textContent='月は1〜12で入力してください'; errEl.style.display='block'; return; }
+  if (dVal < 1 || dVal > 31) { errEl.textContent='日は1〜31で入力してください'; errEl.style.display='block'; return; }
+
+  const y = yVal, m = mVal, d = dVal;
+  const timeUnknown = document.getElementById('time-unknown').checked;
+  const hourRaw = (!timeUnknown && birthH !== '') ? parseInt(birthH) : 12;
+  const minRaw  = (!timeUnknown && birthMin2 !== '') ? parseInt(birthMin2) : 0;
+
+  // 視太陽時補正
+  const longitude = parseFloat(document.getElementById('prefecture').value) || 135.0;
+  const diffMin = Math.round((longitude - 135.0) * 4); // 経度差×4分
+
+  // 均時差補正
+  const kinjisaVal = KINJISA[m - 1][d - 1] || 0;
+
+  // サマータイム補正（1948〜1951年の夏期間は1時間戻す）
+  const summerTime = [
+    {year:1948, start:[5,2],  end:[9,11]},
+    {year:1949, start:[4,3],  end:[9,10]},
+    {year:1950, start:[5,7],  end:[9,9]},
+    {year:1951, start:[5,6],  end:[9,8]},
+  ];
+  let summerOffset = 0;
+  for (const st of summerTime) {
+    if (y === st.year) {
+      const startTotal = st.start[0] * 100 + st.start[1];
+      const endTotal   = st.end[0]   * 100 + st.end[1];
+      const birthTotal = m * 100 + d;
+      if (birthTotal >= startTotal && birthTotal <= endTotal) {
+        summerOffset = -60; // 1時間戻す
+        break;
+      }
+    }
+  }
+
+  let totalMin = hourRaw * 60 + minRaw + diffMin + kinjisaVal + summerOffset;
+  // 日をまたぐ処理
+  let adjustDay = d;
+  let adjustMonth = m;
+  let adjustYear = y;
+  if (totalMin < 0) {
+    totalMin += 1440;
+    adjustDay = d - 1;
+    // 月をまたぐ場合
+    if (adjustDay < 1) {
+      adjustMonth = m - 1;
+      if (adjustMonth < 1) { adjustMonth = 12; adjustYear = y - 1; }
+      // 前月の末日を取得
+      const lastDay = new Date(adjustYear, adjustMonth, 0).getDate();
+      adjustDay = lastDay;
+    }
+  }
+  if (totalMin >= 1440) {
+    totalMin -= 1440;
+    adjustDay = d + 1;
+    // 月をまたぐ場合
+    const lastDay = new Date(y, m, 0).getDate();
+    if (adjustDay > lastDay) {
+      adjustDay = 1;
+      adjustMonth = m + 1;
+      if (adjustMonth > 12) { adjustMonth = 1; adjustYear = y + 1; }
+    }
+  }
+  const hour = Math.floor(totalMin / 60);
+  const min  = totalMin % 60;
+
+
+
+  // 四柱計算（年柱・月柱は元の生年月日、日柱・時柱は補正後の日付）
+  const yp = calcYearPillar(y, m, d, hourRaw, minRaw);
+  const mp = calcMonthPillar(y, m, d, hourRaw, minRaw, yp.kan);
+  const dp = calcDayPillar(adjustYear, adjustMonth, adjustDay);
+  if (!dp) { errEl.textContent='日柱の計算に失敗しました'; errEl.style.display='block'; return; }
+  // 23時は翌日の子時扱い→翌日の日干を使って時柱計算
+  let hourDayKanIdx = dp.kan;
+  if (hour === 23) {
+    const nextDay = new Date(adjustYear, adjustMonth - 1, adjustDay + 1);
+    const ndp = calcDayPillar(nextDay.getFullYear(), nextDay.getMonth() + 1, nextDay.getDate());
+    hourDayKanIdx = ndp.kan;
+  }
+  const hp = calcHourPillar(hour, hourDayKanIdx);
+
+  const pillars = [
+    { label:'時柱', kan:hp.kan, shi:hp.shi, zo:getZokan(hp.shi), unknown:timeUnknown },
+    { label:'日柱', kan:dp.kan, shi:dp.shi, zo:getZokan(dp.shi) },
+    { label:'月柱', kan:mp.kan, shi:mp.shi, zo:getZokan(mp.shi) },
+    { label:'年柱', kan:yp.kan, shi:yp.shi, zo:getZokan(yp.shi) },
+  ];
+
+  // 十干カウント（天干＋蔵干3つ）＋位置スコア
+  const kanCount = {};
+  const kanScore = {};
+  const kanHasKan = {}; // 天干に存在するか
+  const kanHasSo  = {}; // 蔵干に存在するか
+  KAN.forEach(k => { kanCount[k] = 0; kanScore[k] = 0; kanHasKan[k] = false; kanHasSo[k] = false; });
+
+  // 横スコア: 時柱(0)=1, 日柱(1)=3, 月柱(2)=4, 年柱(3)=2
+  const colScore = [1, 3, 6, 2]; // 時柱=1,日柱=3,月柱=6,年柱=2
+  // 縦スコア: 天干=4, 蔵干上=2, 蔵干中=1, 蔵干下=3
+  const rowScore = [10, 4, 2, 6]; // 天干=10, 蔵干上=4, 蔵干中=2, 蔵干下=6
+
+  pillars.forEach((p, colIdx) => {
+    // 時刻不明の場合は時柱をカウントしない
+    if (p.unknown) return;
+    // 天干
+    kanCount[KAN[p.kan]]++;
+    kanScore[KAN[p.kan]] += colScore[colIdx] + rowScore[0];
+    kanHasKan[KAN[p.kan]] = true;
+    // 蔵干上
+    if (p.zo[0] >= 0) {
+      kanCount[KAN[p.zo[0]]]++;
+      kanScore[KAN[p.zo[0]]] += colScore[colIdx] + rowScore[1];
+      kanHasSo[KAN[p.zo[0]]] = true;
+    }
+    // 蔵干中
+    if (p.zo[1] >= 0) {
+      kanCount[KAN[p.zo[1]]]++;
+      kanScore[KAN[p.zo[1]]] += colScore[colIdx] + rowScore[2];
+      kanHasSo[KAN[p.zo[1]]] = true;
+    }
+    // 蔵干下
+    if (p.zo[2] >= 0) {
+      kanCount[KAN[p.zo[2]]]++;
+      kanScore[KAN[p.zo[2]]] += colScore[colIdx] + rowScore[3];
+      kanHasSo[KAN[p.zo[2]]] = true;
+    }
+  });
+
+  window._kanCount = kanCount; 
+
+
+
+// 八理図モーダル
+function openHaririzu() {
+  document.getElementById('haririzu-modal').style.display = 'flex';
+  document.getElementById('haririzu-modal-inner').style.animation = 'slideDown 0.35s cubic-bezier(0.34,1.56,0.64,1) both';
+}
+function closeHaririzu() {
+  const inner = document.getElementById('haririzu-modal-inner');
+  inner.classList.add('closing');
+  setTimeout(() => {
+    document.getElementById('haririzu-modal').style.display = 'none';
+    inner.classList.remove('closing');
+  }, 250);
+}
+document.addEventListener('DOMContentLoaded', function() {
+  const hm = document.getElementById('haririzu-modal');
+  if (hm) hm.addEventListener('click', function(e) {
+    if (e.target === this) closeHaririzu();
+  });
+});
+
+// レベルモーダル用にグローバル保存
+  // 通根：天干と蔵干の両方に存在する干
+  const kanTsukon = {};
+  KAN.forEach(k => { kanTsukon[k] = kanHasKan[k] && kanHasSo[k]; });
+
+  // 命式グリッド（5行: ヘッダー・天干・地支・蔵干上・蔵干中・蔵干下）
+  const grid = document.getElementById('meishiki-grid');
+  let html = pillars.map(p => `<div class="pillar-header">${p.label}</div>`).join('');
+  // 天干行（個別カラー・名前付き）
+  const KAN_NAMES = {'甲':'木','乙':'草花','丙':'太陽','丁':'灯火','戊':'山','己':'畑','庚':'剣','辛':'宝石','壬':'河','癸':'霧雨'};
+  html += pillars.map(p => {
+    if (p.unknown) return '<div class="kan-cell el-empty" style="background:rgba(200,200,200,0.3);border:2px dashed #ccc;"><span class="cell-char" style="color:#aaa;font-size:20px;">？</span></div>';
+    return '<div class="kan-cell el-'+KAN[p.kan]+'" onclick="openSozaiModal(\''+KAN[p.kan]+'\')"><span class="cell-char">'+KAN[p.kan]+'</span><span class="cell-sub">'+KAN_NAMES[KAN[p.kan]]+'</span></div>';
+  }).join('');
+  // 地支行（透明）
+  html += pillars.map(p => {
+    if (p.unknown) return '<div class="shi-cell el-shi"><span class="cell-char" style="color:#aaa;">？</span></div>';
+    return '<div class="shi-cell el-shi"><span class="cell-char">'+SHI[p.shi]+'</span></div>';
+  }).join('');
+  // 蔵干上行
+  html += pillars.map(p => {
+    if (p.unknown) return '<div class="zo-cell el-empty" style="background:rgba(200,200,200,0.2);border:1px dashed #ccc;"><span style="color:#aaa;font-size:12px;">？</span></div>';
+    const zo = p.zo[0];
+    if (zo < 0) return '<div class="zo-cell el-empty"></div>';
+    return '<div class="zo-cell el-'+KAN[zo]+'" onclick="openSozaiModal(\''+KAN[zo]+'\')"><span class="cell-char">'+KAN[zo]+'</span><span class="cell-sub">'+KAN_NAMES[KAN[zo]]+'</span></div>';
+  }).join('');
+  // 蔵干中行
+  html += pillars.map(p => {
+    if (p.unknown) return '<div class="zo-cell el-empty"></div>';
+    const zo = p.zo[1];
+    if (zo < 0) return '<div class="zo-cell el-empty"></div>';
+    return '<div class="zo-cell el-'+KAN[zo]+'" onclick="openSozaiModal(\''+KAN[zo]+'\')"><span class="cell-char">'+KAN[zo]+'</span><span class="cell-sub">'+KAN_NAMES[KAN[zo]]+'</span></div>';
+  }).join('');
+  // 蔵干下行
+  html += pillars.map(p => {
+    if (p.unknown) return '<div class="zo-cell el-empty" style="background:rgba(200,200,200,0.2);border:1px dashed #ccc;"><span style="color:#aaa;font-size:12px;">？</span></div>';
+    const zo = p.zo[2];
+    if (zo < 0) return '<div class="zo-cell el-empty"></div>';
+    return '<div class="zo-cell el-'+KAN[zo]+'" onclick="openSozaiModal(\''+KAN[zo]+'\')"><span class="cell-char">'+KAN[zo]+'</span><span class="cell-sub">'+KAN_NAMES[KAN[zo]]+'</span></div>';
+  }).join('');
+  grid.innerHTML = html;
+
+  // 十干リスト（数の多い順・一列・八理図名・種類間に間隔）
+  // 干リストは非表示のため処理スキップ
+
+  // 数が多い順→通根あり上位→位置スコア順→陽干上位
+  const YOGAN = ['甲','丙','戊','庚','壬']; // 陽干
+  const sorted = [...KAN].sort((a, b) => {
+    // 1. 個数
+    if (kanCount[b] !== kanCount[a]) return kanCount[b] - kanCount[a];
+    // 2. 通根あり上位
+    const aTsu = kanTsukon[a] ? 1 : 0;
+    const bTsu = kanTsukon[b] ? 1 : 0;
+    if (bTsu !== aTsu) return bTsu - aTsu;
+    // 3. 位置スコア
+    if (kanScore[b] !== kanScore[a]) return kanScore[b] - kanScore[a];
+    // 4. 陽干上位
+    const aYo = YOGAN.includes(a) ? 1 : 0;
+    const bYo = YOGAN.includes(b) ? 1 : 0;
+    return bYo - aYo;
+  });
+  const bubbleContainer = document.getElementById('bubbles-wrap');
+  // sortedはここより後で定義されるため後で保存
+  bubbleContainer.innerHTML = '';
+  bubbleContainer.style.position = 'relative';
+
+  const isMobile = window.innerWidth <= 600;
+  const containerSize = 508;
+  const mobileScale = 1;
+  // スマホ時は命式と同じleft-colの幅を基準にセンターを計算
+  const centerX = containerSize / 2; // 508/2 = 254でちょうど中央
+  const centerY = containerSize / 2;
+  const radius = 176;
+  bubbleContainer.style.width = containerSize + 'px';
+  bubbleContainer.style.height = containerSize + 'px';
+  bubbleContainer.style.marginLeft = isMobile ? 'auto' : '-60px';
+  bubbleContainer.style.marginRight = isMobile ? 'auto' : '';
+  bubbleContainer.style.marginTop = '-28px';
+
+  // 自分バブル（中央）
+  const selfEl = document.createElement('div');
+  selfEl.className = 'bubble bubble-self';
+  selfEl.style.position = 'absolute';
+  selfEl.style.left = (centerX - 44) + 'px';
+  selfEl.style.top = (centerY - 44) + 'px';
+  selfEl.style.background = 'radial-gradient(circle at 30% 30%, rgba(255,252,235,0.9), #e0c070)';
+  selfEl.style.border = 'none';
+  selfEl.style.boxShadow = '0 0 40px 15px rgba(184,134,11,0.3), 0 4px 16px rgba(184,134,11,0.3), inset 0 2px 0 rgba(255,255,255,0.5)';
+  const selfGender = document.getElementById('gender').value;
+  const selfIcon = selfGender === 'male' ? '🧘‍♂️' : '🧘';
+  selfEl.innerHTML = '<span style="font-size:47px;line-height:1;">' + selfIcon + '</span><span class="bubble-char" style="font-size:13px;color:white;font-family:Kaisei Decol,serif;font-weight:700;text-shadow:-1px -1px 2px rgba(0,0,0,0.6);">自分</span>';
+  bubbleContainer.appendChild(selfEl);
+
+  // 10干を時計回りに配置（12時=0度から時計回り）
+  sorted.forEach((k, i) => {
+    const cnt = kanCount[k];
+    const d = KAN_DATA[k];
+    const sz = cnt >= 5 ? 5 : cnt;
+    const sizeMap = [0, 59, 94, 117, 143, 169];
+    const bSize = sizeMap[sz];
+
+    // 角度：12時=−90度から時計回り
+    const angle = (i / 10) * 360 - 90;
+    const rad = angle * Math.PI / 180;
+    const dispSize = cnt === 0 ? 50 : bSize;
+    const x = centerX + radius * Math.cos(rad) - dispSize / 2;
+    const y = centerY + radius * Math.sin(rad) - dispSize / 2;
+
+    const el = document.createElement('div');
+    el.className = 'bubble bubble-sz-' + sz;
+    el.style.position = 'absolute';
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.width = dispSize + 'px';
+    el.style.height = dispSize + 'px';
+    el.style.animationDelay = (i * 0.06) + 's';
+    const animDuration = 0.6 + (i * 0.06);
+    setTimeout(() => { el.style.transition = 'transform 0.2s'; }, animDuration * 1000 + 100);
+    if (cnt === 0) {
+      el.style.background = 'transparent';
+      el.style.boxShadow = 'none';
+      el.style.border = 'none';
+    }
+    if (cnt > 0) {
+      const kanColors = {
+        '甲':'radial-gradient(circle at 30% 30%, rgba(125,224,168,0.6), #0d5c2a)',
+        '乙':'radial-gradient(circle at 30% 30%, rgba(223,240,160,0.6), #5a9010)',
+        '丙':'radial-gradient(circle at 30% 30%, rgba(255,144,144,0.6), #cc2020)',
+        '丁':'radial-gradient(circle at 30% 30%, rgba(255,224,238,0.6), #d06080)',
+        '戊':'radial-gradient(circle at 30% 30%, rgba(208,144,112,0.6), #4a2010)',
+        '己':'radial-gradient(circle at 30% 30%, rgba(248,208,144,0.6), #a04800)',
+        '庚':'radial-gradient(circle at 30% 30%, rgba(255,240,128,0.6), #a07800)',
+        '辛':'radial-gradient(circle at 30% 30%, rgba(255,255,240,0.6), #b0a800)',
+        '壬':'radial-gradient(circle at 30% 30%, rgba(112,208,255,0.6), #003880)',
+        '癸':'radial-gradient(circle at 30% 30%, rgba(240,250,255,0.6), #4090b0)',
+      };
+      el.style.background = kanColors[k];
+      el.style.color = 'white';
+    }
+
+    const fontSize = sz === 1 ? 8 : sz === 2 ? 9 : sz === 3 ? 10 : sz === 4 ? 11 : 12;
+    const baseFont = cnt === 0 ? 9 : fontSize;
+    const nameColor = cnt === 0 ? '#333' : 'white';
+    const nameShadow = cnt === 0 ? '1px 1px 2px rgba(255,255,255,0.9)' : '-1px -1px 2px rgba(0,0,0,0.6)';
+    const nameFontMult = cnt === 0 ? 1.267 : 1.584;
+    const nameStyle = 'display:block;color:'+nameColor+';font-family:Kaisei Decol,serif;font-size:'+Math.round((baseFont+3)*nameFontMult)+'px;' +
+      'text-shadow:'+nameShadow+';white-space:nowrap;line-height:1.3;font-weight:700;';
+    const dirX = centerX - (centerX + radius * Math.cos(angle * Math.PI / 180));
+    const dirY = centerY - (centerY + radius * Math.sin(angle * Math.PI / 180));
+    const dirLen = Math.sqrt(dirX*dirX + dirY*dirY);
+    const effectiveSize = cnt === 0 ? sizeMap[1] : bSize;
+    const offsetX = (dirX/dirLen) * (effectiveSize/2 + 6);
+    const offsetY = (dirY/dirLen) * (effectiveSize/2 + 6);
+    const countStyle = 'position:absolute;left:calc(50% + '+offsetX+'px);top:calc(50% + '+offsetY+'px);transform:translate(-50%,-50%);' +
+      'color:#888;font-family:Shippori Mincho,serif;font-size:'+Math.round((baseFont+2)*1.56)+'px;white-space:nowrap;font-weight:700;' +
+      'text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff;';
+    el.style.overflow = 'visible';
+    el.style.zIndex = String(10 - i);
+    el.onclick = () => openSozaiModal(k);
+    el.style.cursor = 'pointer';
+    el.addEventListener('mouseenter', () => {
+      bubbleContainer.style.overflow = 'visible';
+      el.style.transform = 'scale(1.10)';
+      el.style.zIndex = '100';
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = 'scale(1)';
+      el.style.zIndex = String(10 - i);
+      setTimeout(() => { bubbleContainer.style.overflow = ''; }, 200);
+    });
+    el.addEventListener('touchstart', () => {
+      bubbleContainer.style.overflow = 'visible';
+      el.style.transform = 'scale(1.10)';
+      el.style.zIndex = '100';
+    }, {passive:true});
+    el.addEventListener('touchend', () => {
+      setTimeout(() => {
+        el.style.transform = 'scale(1)';
+        el.style.zIndex = String(10 - i);
+        bubbleContainer.style.overflow = '';
+      }, 300);
+    }, {passive:true});
+    el.innerHTML =
+      getIcon(d, Math.round(baseFont*3*1.43)) +
+      '<span style="'+nameStyle+'">'+d.name+'</span>' +
+      '<span style="'+countStyle+'">'+cnt+'</span>';
+    bubbleContainer.appendChild(el);
+  });
+
+
+
+  // 表示
+  document.getElementById('disp-name').textContent = nameVal + '様';
+  const prefName = document.getElementById('prefecture').options[document.getElementById('prefecture').selectedIndex].text;
+  const diffStr = diffMin >= 0 ? `+${diffMin}分` : `${diffMin}分`;
+  const kinjisaStr = kinjisaVal >= 0 ? `+${kinjisaVal}分` : `${kinjisaVal}分`;
+  const summerStr = summerOffset !== 0 ? '　サマータイム-60分' : '';
+  // 年齢計算
+  const today = new Date();
+  let age = today.getFullYear() - y;
+  const birthDateThisYear = new Date(today.getFullYear(), m - 1, d);
+  if (today < birthDateThisYear) age--;
+
+  document.getElementById('disp-info').innerHTML = 
+    `${y}年${m}月${d}日 ${hourRaw}:${String(minRaw).padStart(2,'0')}（${prefName}）　${age}歳<br>視太陽時${diffStr} 均時差${kinjisaStr}${summerStr} → ${hour}:${String(min).padStart(2,'0')}`;
+
+  const resultEl = document.getElementById('result');
+  resultEl.classList.add('show');
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // 名前ラベル更新
+  window._sorted = sorted; 
+
+
+
+
+// 八理図モーダル
+function openHaririzu() {
+  document.getElementById('haririzu-modal').style.display = 'flex';
+  document.getElementById('haririzu-modal-inner').style.animation = 'slideDown 0.35s cubic-bezier(0.34,1.56,0.64,1) both';
+}
+function closeHaririzu() {
+  const inner = document.getElementById('haririzu-modal-inner');
+  inner.classList.add('closing');
+  setTimeout(() => {
+    document.getElementById('haririzu-modal').style.display = 'none';
+    inner.classList.remove('closing');
+  }, 250);
+}
+document.addEventListener('DOMContentLoaded', function() {
+  const hm = document.getElementById('haririzu-modal');
+  if (hm) hm.addEventListener('click', function(e) {
+    if (e.target === this) closeHaririzu();
+  });
+});
+
+// レベルモーダル用
+  const nameLabel = document.getElementById('bubble-name-label');
+  const nameLabelTop = document.getElementById('name-label');
+  if (nameLabel) {
+    nameLabel.textContent = '◈ 八理図 ◈';
+  }
+  if (nameLabelTop) {
+    nameLabelTop.textContent = nameVal !== 'あなた' ? '◈ ' + nameVal + ' 様 ◈' : '◈ あなた 様 ◈';
+  }
+
+  // 陰陽十二支図を描画
+  drawJushi(pillars);
+
+  // 大運計算
+  const genderVal = document.getElementById('gender').value;
+  calcDaun(y, m, d, hour, min, genderVal, yp.kan, pillars);
+
+  // 年運描画
+  drawNenun();
+}
+
+// ===== 年運描画 =====
+function drawNenun() {
+  const KAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+  const SHI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  const ZOKAN_H = [
+    [8,-1,9],[9,7,5],[4,2,0],[0,-1,1],[1,9,4],[4,6,2],
+    [2,5,3],[3,1,5],[4,8,6],[6,-1,7],[7,3,4],[4,0,8],
+  ];
+  const KAN_DATA = {
+    '甲':{ icon:'🌳', name:'木',  svg:'木' },
+    '乙':{ icon:'🌼', name:'草花', svg:null },
+    '丙':{ icon:'☀️', name:'太陽', svg:'太陽' },
+    '丁':{ icon:'🕯️', name:'灯火', svg:'灯火' },
+    '戊':{ icon:'🗻', name:'山',  svg:'山' },
+    '己':{ icon:'🌾', name:'畑',  svg:null },
+    '庚':{ icon:'⚔️', name:'剣',  svg:'剣' },
+    '辛':{ icon:'💎', name:'宝石', svg:'宝石' },
+    '壬':{ icon:'🌊', name:'河',  svg:null },
+    '癸':{ icon:'🌧️', name:'霧雨', svg:null },
+  };
+  // getIconはグローバル関数を使用
+  const kanColors = {
+    '甲':'radial-gradient(circle at 30% 30%, rgba(125,224,168,0.6), #0d5c2a)',
+    '乙':'radial-gradient(circle at 30% 30%, rgba(223,240,160,0.6), #5a9010)',
+    '丙':'radial-gradient(circle at 30% 30%, rgba(255,144,144,0.6), #cc2020)',
+    '丁':'radial-gradient(circle at 30% 30%, rgba(255,224,238,0.6), #d06080)',
+    '戊':'radial-gradient(circle at 30% 30%, rgba(208,144,112,0.6), #4a2010)',
+    '己':'radial-gradient(circle at 30% 30%, rgba(248,208,144,0.6), #a04800)',
+    '庚':'radial-gradient(circle at 30% 30%, rgba(255,240,128,0.6), #a07800)',
+    '辛':'radial-gradient(circle at 30% 30%, rgba(255,255,240,0.6), #b0a800)',
+    '壬':'radial-gradient(circle at 30% 30%, rgba(112,208,255,0.6), #003880)',
+    '癸':'radial-gradient(circle at 30% 30%, rgba(240,250,255,0.6), #4090b0)',
+  };
+
+  const currentYear = new Date().getFullYear();
+  const startYear = 1926;
+  const endYear = 2100;
+
+  const section = document.getElementById('nenun-section');
+  let html = '<p class="nenun-title">◈ 年 運 ◈</p>';
+  html += '<div class="nenun-scroll" id="nenun-scroll">';
+
+  for (let yr = startYear; yr <= endYear; yr++) {
+    const kanIdx = ((yr - 4) % 10 + 10) % 10;
+    const shiIdx = ((yr - 4) % 12 + 12) % 12;
+    const k = KAN[kanIdx];
+    const s = SHI[shiIdx];
+    const zo = ZOKAN_H[shiIdx];
+    const isCurrent = yr === currentYear;
+
+    const makeBubble = (ki, isKan) => {
+      if (ki < 0) return '<div class="nenun-bubble empty"></div>';
+      const kn = KAN[ki];
+      const kd = KAN_DATA[kn];
+      const sq = isKan ? ' kan-sq' : '';
+      return '<div class="nenun-bubble' + sq + '" onclick="openSozaiModal(\'' + kn + '\')" style="cursor:pointer;background:' + kanColors[kn] + ';display:flex;flex-direction:column;align-items:center;justify-content:center;">' +
+        getIcon(kd, 19) +
+        '<span class="nb-name">' + kd.name + '</span>' +
+        '</div>';
+    };
+
+    const rowBg = isCurrent ? '' : 'background:var(--bg);';
+    html += '<div class="nenun-row' + (isCurrent ? ' current-year' : '') + '" id="nenun-' + yr + '" style="' + rowBg + '">';
+    html += '<div class="nenun-year-label">' + (isCurrent ? '▶' : '') + yr + '</div>';
+    html += '<span style="font-family:Shippori Mincho,serif;font-size:14px;color:var(--ink);min-width:24px;">' + k + s + '</span>';
+    html += '<div class="nenun-icons" style="justify-content:flex-start;gap:10px;">';
+    html += makeBubble(kanIdx, true);  // 干（四角）
+    html += makeBubble(zo[0], false);  // 蔵干上（丸）
+    html += makeBubble(zo[1], false);  // 蔵干中（丸）
+    html += makeBubble(zo[2], false);  // 蔵干下（丸）
+    html += '</div>';
+    html += '</div>';
+  }
+
+  html += '</div>';
+  section.innerHTML = html;
+
+  // 今年を中央にスクロール
+  setTimeout(() => {
+    const scrollEl = document.getElementById('nenun-scroll');
+    const elCurrent = document.getElementById('nenun-' + currentYear);
+    if (elCurrent && scrollEl) {
+      scrollEl.scrollTop = elCurrent.offsetTop - scrollEl.offsetTop;
+    }
+  }, 500);
+}
+
+// ===== 大運計算 =====
+function calcDaun(birthY, birthM, birthD, birthHour, birthMin, gender, yearKanIdx, pillars) {
+  const KAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+  const SHI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  const KAN_EL = ['木','木','火','火','土','土','金','金','水','水'];
+  const SHI_EL = ['水','土','木','木','土','火','火','土','金','金','土','水'];
+
+  const ZOKAN_HARIRIZU = [
+    [8,-1,9],[9,7,5],[4,2,0],[0,-1,1],[1,9,4],[4,6,2],
+    [2,5,3],[3,1,5],[4,8,6],[6,-1,7],[7,3,4],[4,0,8],
+  ];
+
+  const KAN_DATA = {
+    '甲':{ icon:'🌳', name:'木',  svg:'木' },
+    '乙':{ icon:'🌼', name:'草花', svg:null },
+    '丙':{ icon:'☀️', name:'太陽', svg:'太陽' },
+    '丁':{ icon:'🕯️', name:'灯火', svg:'灯火' },
+    '戊':{ icon:'🗻', name:'山',  svg:'山' },
+    '己':{ icon:'🌾', name:'畑',  svg:null },
+    '庚':{ icon:'⚔️', name:'剣',  svg:'剣' },
+    '辛':{ icon:'💎', name:'宝石', svg:'宝石' },
+    '壬':{ icon:'🌊', name:'河',  svg:null },
+    '癸':{ icon:'🌧️', name:'霧雨', svg:null },
+  };
+  // getIconはグローバル関数を使用
+
+  const kanColors = {
+    '甲':'radial-gradient(circle at 30% 30%, rgba(125,224,168,0.6), #0d5c2a)',
+    '乙':'radial-gradient(circle at 30% 30%, rgba(223,240,160,0.6), #5a9010)',
+    '丙':'radial-gradient(circle at 30% 30%, rgba(255,144,144,0.6), #cc2020)',
+    '丁':'radial-gradient(circle at 30% 30%, rgba(255,224,238,0.6), #d06080)',
+    '戊':'radial-gradient(circle at 30% 30%, rgba(208,144,112,0.6), #4a2010)',
+    '己':'radial-gradient(circle at 30% 30%, rgba(248,208,144,0.6), #a04800)',
+    '庚':'radial-gradient(circle at 30% 30%, rgba(255,240,128,0.6), #a07800)',
+    '辛':'radial-gradient(circle at 30% 30%, rgba(255,255,240,0.6), #b0a800)',
+    '壬':'radial-gradient(circle at 30% 30%, rgba(112,208,255,0.6), #003880)',
+    '癸':'radial-gradient(circle at 30% 30%, rgba(240,250,255,0.6), #4090b0)',
+  };
+
+  // 順行・逆行の判定
+  // 陽干: 甲丙戊庚壬(0,2,4,6,8)
+  const isYogan = [0,2,4,6,8].includes(yearKanIdx);
+  // 男性陽干 or 女性陰干 → 順行
+  const isJunko = (gender === 'male' && isYogan) || (gender === 'female' && !isYogan);
+
+  // 節入りデータから立運を計算
+  // 順行: 生まれた日から次の節入りまでの日数÷3
+  // 逆行: 生まれた日から前の節入りまでの日数÷3
+  // 節入り検索用（getSetsuiri関数を使用）
+
+  // 生まれた月の節入りを取得して前後を判定
+  // 生まれた日時と節入り日時を比較して前後の節を特定
+  let prevSetsu = null, nextSetsu = null;
+
+  // 前後数ヶ月の節入りを調べる
+  for (let offset = -3; offset <= 3; offset++) {
+    let checkM = birthM + offset;
+    let checkY = birthY;
+    if (checkM <= 0) { checkM += 12; checkY--; }
+    if (checkM > 12) { checkM -= 12; checkY++; }
+    const s = getSetsuiri(checkY, checkM);
+    if (!s) continue;
+    // 節入り日時をbirthと比較（日+時+分で比較）
+    const sDay = s[2], sHour = s[3], sMin = s[4];
+    const sY = s[0], sM = s[1];
+    // 年月日時分を数値化して比較
+    const sVal = sY * 100000000 + sM * 1000000 + sDay * 10000 + sHour * 100 + sMin;
+    const bVal = birthY * 100000000 + birthM * 1000000 + birthD * 10000 + birthHour * 60 + birthMin;
+    // 実際の分数で計算
+    const sMinAbs = sY * 525960 + sM * 43800 + sDay * 1440 + sHour * 60 + sMin;
+    const bMinAbs = birthY * 525960 + birthM * 43800 + birthD * 1440 + birthHour * 60 + birthMin;
+    if (sMinAbs <= bMinAbs) {
+      if (!prevSetsu || sMinAbs > prevSetsu.minAbs) {
+        prevSetsu = { data: s, minAbs: sMinAbs };
+      }
+    } else {
+      if (!nextSetsu || sMinAbs < nextSetsu.minAbs) {
+        nextSetsu = { data: s, minAbs: sMinAbs };
+      }
+    }
+  }
+
+  if (!prevSetsu || !nextSetsu) return;
+
+  const bMinAbs = birthY * 525960 + birthM * 43800 + birthD * 1440 + birthHour * 60 + birthMin;
+
+  // 日数差を計算
+  let diffMin;
+  if (isJunko) {
+    diffMin = nextSetsu.minAbs - bMinAbs; // 次の節入りまで
+  } else {
+    diffMin = bMinAbs - prevSetsu.minAbs; // 前の節入りから
+  }
+
+  const diffDays = diffMin / 1440;
+  // 3日=1年で割る → 小数点を年・月に変換
+  const ritsunTotal = diffDays / 3; // 例: 8.76年
+  const ritsunY = Math.floor(ritsunTotal); // 整数部分=年
+  const ritsunM = Math.round((ritsunTotal - ritsunY) * 12); // 小数部分×12=月
+
+  // 立運の年
+  const startYear = birthY + ritsunY + (birthM + ritsunM > 12 ? 1 : 0);
+  const startMonth = ((birthM + ritsunM - 1) % 12) + 1;
+
+  // 月柱の干支インデックスから大運を計算
+  const monthKanIdx = pillars[2].kan; // 月柱天干
+  const monthShiIdx = pillars[2].shi; // 月柱地支
+
+  // 大運の干支リストを生成（10個 = 100歳まで）
+  const daunList = [];
+  for (let i = 1; i <= 10; i++) {
+    let kanIdx, shiIdx;
+    if (isJunko) {
+      kanIdx = (monthKanIdx + i) % 10;
+      shiIdx = (monthShiIdx + i) % 12;
+    } else {
+      kanIdx = ((monthKanIdx - i) % 10 + 10) % 10;
+      shiIdx = ((monthShiIdx - i) % 12 + 12) % 12;
+    }
+    const age = ritsunY + (i - 1) * 10;
+    const year = birthY + age;
+    daunList.push({ kanIdx, shiIdx, age, year, startMonth });
+  }
+
+  // 大運セクション描画
+  const section = document.getElementById('daun-section');
+  const dirStr = isJunko ? '順行運' : '逆行運';
+  const ritsunStr = ritsunY + '歳' + ritsunM + 'ヶ月';
+
+  // 立運前の終了年月を計算
+  let ritsunEndY = birthY;
+  let ritsunEndM = birthM + ritsunM;
+  if (ritsunEndM > 12) { ritsunEndM -= 12; ritsunEndY++; }
+
+  let html = '<p class="daun-title">◈ 大 運 ◈</p>';
+  // 月柱の干支（立運前の干支として表示）
+  const mpKan = KAN[monthKanIdx];
+  const mpShi = SHI[monthShiIdx];
+  html += '<p class="daun-info" style="font-size:12px;">（立運前）' + mpKan + mpShi + '　0歳〜' + ritsunStr + '　（' + birthY + '年' + birthM + '月）</p>';
+  html += '<p class="daun-info" style="font-size:11px;color:var(--muted);">' + dirStr + '</p>';
+  html += '<div class="daun-table">';
+
+  // 現在の年
+  const currentYear = new Date().getFullYear();
+
+  const makeBubble = (kanI, isEmpty, isKan) => {
+    if (isEmpty || kanI < 0) return '<div class="daun-bubble empty"></div>';
+    const kn = KAN[kanI];
+    const kdata = KAN_DATA[kn];
+    const shapeClass = isKan ? ' kan-sq' : '';
+    return '<div class="daun-bubble' + shapeClass + '" onclick="openSozaiModal(\'' + kn + '\')" style="cursor:pointer;background:' + kanColors[kn] + ';display:flex;flex-direction:column;align-items:center;justify-content:center;">' +
+      getIcon(kdata, 24) +
+      '<span class="b-name">' + kdata.name + '</span>' +
+      '</div>';
+  };
+
+  let firstRendered = false;
+  daunList.forEach((d, idx) => {
+    // ritsunY===0の場合は0歳も表示、それ以外はスキップ
+    if (d.age === 0 && ritsunY > 0) return;
+    const isCurrent = currentYear >= d.year && currentYear < d.year + 10;
+    const rowClass = isCurrent ? 'daun-row current' : 'daun-row';
+
+    const k = KAN[d.kanIdx];
+    const s = SHI[d.shiIdx];
+    const kd = KAN_DATA[k];
+    const zo = ZOKAN_HARIRIZU[d.shiIdx];
+
+    // 1帯目はritsunMヶ月から、以降は10年ごと
+    const ageStr = (d.age === 0 && ritsunY === 0) ? ritsunM + 'ヶ月' : d.age + '歳' + ritsunM + 'ヶ月';
+    const yearMonthStr = d.year + '年' + ritsunM + '月';
+
+    const isFirst = !firstRendered;
+    firstRendered = true;
+    html += '<div class="' + rowClass + '">';
+    html += '<div class="daun-age">';
+    if (isFirst) html += '<span style="font-size:13px;color:var(--gold);font-family:Kaisei Decol,serif;display:block;letter-spacing:1px;">（立運）</span>';
+    html += (isCurrent ? '▶ ' : '') + ageStr;
+    html += '<br><span style="font-size:11px;color:var(--muted)">（' + yearMonthStr + '）</span>';
+    html += '</div>';
+    html += '<span style="font-family:Shippori Mincho,serif;font-size:16px;font-weight:bold;color:var(--ink);min-width:44px;text-align:center;letter-spacing:2px;flex-shrink:0;">' + k + s + '</span>';
+    html += '<div class="daun-icons">';
+    html += makeBubble(d.kanIdx, false, true);
+    html += makeBubble(zo[0], false, false);
+    html += makeBubble(zo[1], zo[1] < 0, false);
+    html += makeBubble(zo[2], false, false);
+    html += '</div>';
+    html += '</div>';
+  });
+
+  html += '</div>';
+  section.innerHTML = html;
+}
+
+
+function drawJushi(pillars) {
+  const svg = document.getElementById('jushi-svg');
+  const cx = 110, cy = 110;
+  const outerR = 100, innerR = 68, yinR = 34;
+
+  // 命式に含まれる地支とカウントを取得
+  // 時刻不明の場合は時柱を除外
+  const activeShi = pillars.filter(p => !p.unknown).map(p => p.shi);
+  const shiCount = {};
+  activeShi.forEach(s => { shiCount[s] = (shiCount[s] || 0) + 1; });
+
+  // 十二支データ（時計の時間対応）
+  // 夏10:30-1:30: 巳(-120)午(-90)未(-60)
+  // 秋1:30-4:30:  申(-30)酉(0)戌(30)
+  // 冬4:30-7:30:  亥(60)子(90)丑(120)
+  // 春7:30-10:30: 寅(150)卯(180)辰(210)
+  const shiList = [
+    {name:'午', season:'夏', angle:-90},
+    {name:'未', season:'夏', angle:-60},
+    {name:'巳', season:'夏', angle:-120},
+    {name:'申', season:'秋', angle:-30},
+    {name:'酉', season:'秋', angle:0},
+    {name:'戌', season:'秋', angle:30},
+    {name:'亥', season:'冬', angle:60},
+    {name:'子', season:'冬', angle:90},
+    {name:'丑', season:'冬', angle:120},
+    {name:'寅', season:'春', angle:150},
+    {name:'卯', season:'春', angle:180},
+    {name:'辰', season:'春', angle:210},
+  ];
+
+  const seasonColors = {
+    '春': '#90d060',
+    '夏': '#ff6060',
+    '秋': '#ffe060',
+    '冬': '#80c8f8',
+  };
+
+  const SHI_LIST = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+
+  let svgHtml = '';
+
+  // グラデーション定義
+  svgHtml += '<defs>';
+  // 夏グラデ（上・赤）
+  svgHtml += '<radialGradient id="gradSummer" cx="50%" cy="20%" r="80%"><stop offset="0%" stop-color="#ff9090"/><stop offset="100%" stop-color="#cc2020"/></radialGradient>';
+  // 秋グラデ（右・オレンジ）
+  svgHtml += '<radialGradient id="gradAutumn" cx="30%" cy="30%" r="80%"><stop offset="0%" stop-color="#fff080"/><stop offset="100%" stop-color="#a07800"/></radialGradient>';
+  // 冬グラデ（下・水色）
+  svgHtml += '<radialGradient id="gradWinter" cx="50%" cy="80%" r="80%"><stop offset="0%" stop-color="#b0e0ff"/><stop offset="100%" stop-color="#3080c0"/></radialGradient>';
+  // 春グラデ（左・緑）
+  svgHtml += '<radialGradient id="gradSpring" cx="20%" cy="50%" r="80%"><stop offset="0%" stop-color="#b0f080"/><stop offset="100%" stop-color="#208030"/></radialGradient>';
+  svgHtml += '</defs>';
+
+  // 外側の大円（背景）
+  svgHtml += '<circle cx="'+cx+'" cy="'+cy+'" r="'+outerR+'" fill="white" stroke="#ccc" stroke-width="1"/>';
+
+  // 季節セクター（時計で指定された角度）
+  // 冬4:30-7:30=45°-135°、春7:30-10:30=135°-225°、夏10:30-1:30=225°-315°、秋1:30-4:30=-45°-45°
+  const seasons = [
+    {name:'冬', startAngle:45,   endAngle:135,  grad:'url(#gradWinter)', textAngle:90},
+    {name:'春', startAngle:135,  endAngle:225,  grad:'url(#gradSpring)', textAngle:180},
+    {name:'夏', startAngle:225,  endAngle:315,  grad:'url(#gradSummer)', textAngle:270},
+    {name:'秋', startAngle:-45,  endAngle:45,   grad:'url(#gradAutumn)', textAngle:0},
+  ];
+
+  seasons.forEach(s => {
+    const a1 = s.startAngle * Math.PI / 180;
+    const a2 = s.endAngle * Math.PI / 180;
+    const x1 = cx + outerR * Math.cos(a1);
+    const y1 = cy + outerR * Math.sin(a1);
+    const x2 = cx + outerR * Math.cos(a2);
+    const y2 = cy + outerR * Math.sin(a2);
+    const xi1 = cx + innerR * Math.cos(a1);
+    const yi1 = cy + innerR * Math.sin(a1);
+    const xi2 = cx + innerR * Math.cos(a2);
+    const yi2 = cy + innerR * Math.sin(a2);
+    svgHtml += '<path d="M'+xi1+','+yi1+' L'+x1+','+y1+' A'+outerR+','+outerR+' 0 0,1 '+x2+','+y2+' L'+xi2+','+yi2+' A'+innerR+','+innerR+' 0 0,0 '+xi1+','+yi1+' Z" fill="'+s.grad+'" opacity="0.85"/>';
+    const ta = s.textAngle * Math.PI / 180;
+    const tx = cx + ((outerR + innerR) / 2) * Math.cos(ta);
+    const ty = cy + ((outerR + innerR) / 2) * Math.sin(ta);
+    svgHtml += '<text x="'+tx+'" y="'+ty+'" text-anchor="middle" dominant-baseline="middle" font-size="16" fill="white" font-family="Kaisei Decol,serif" font-weight="bold" style="text-shadow:0 2px 4px rgba(0,0,0,0.6)">'+s.name+'</text>';
+  });
+
+  // 内側の円（白）
+  svgHtml += '<circle cx="'+cx+'" cy="'+cy+'" r="'+innerR+'" fill="white" stroke="#ccc" stroke-width="1"/>';
+
+  // 十二支（時計回り）
+  shiList.forEach(s => {
+    const tx = cx + (innerR - 15) * Math.cos(s.angle * Math.PI / 180);
+    const ty = cy + (innerR - 15) * Math.sin(s.angle * Math.PI / 180);
+    const shiIdx = SHI_LIST.indexOf(s.name);
+    const isActive = activeShi.includes(shiIdx);
+    const circle_r = 13;
+    const fillColor = isActive ? seasonColors[s.season] : 'white';
+    const strokeColor = isActive ? '#666' : '#ddd';
+    const strokeW = isActive ? 2 : 1;
+    const textColor = isActive ? 'white' : '#444';
+    if (isActive) {
+      const gradId = 'gradShi_' + s.name;
+      const sc = s.season === '夏' ? ['#ff9090','#cc2020'] :
+                 s.season === '秋' ? ['#fff080','#a07800'] :
+                 s.season === '冬' ? ['#b0e0ff','#3080c0'] :
+                                    ['#b0f080','#208030'];
+      svgHtml += '<radialGradient id="'+gradId+'" cx="35%" cy="35%" r="70%">' +
+        '<stop offset="0%" stop-color="'+sc[0]+'"/>' +
+        '<stop offset="100%" stop-color="'+sc[1]+'"/>' +
+        '</radialGradient>';
+      svgHtml += '<circle cx="'+tx+'" cy="'+ty+'" r="'+circle_r+'" fill="url(#'+gradId+')" stroke="'+strokeColor+'" stroke-width="'+strokeW+'"/>';
+    } else {
+      svgHtml += '<circle cx="'+tx+'" cy="'+ty+'" r="'+circle_r+'" fill="white" stroke="#ddd" stroke-width="1"/>';
+    }
+    svgHtml += '<text x="'+tx+'" y="'+ty+'" text-anchor="middle" dominant-baseline="middle" font-size="17" fill="'+textColor+'" font-family="Kaisei Decol,serif" font-weight="'+(isActive?'bold':'normal')+'">'+s.name+'</text>';
+    // 2個以上の場合は×数を外側に表示
+    const shiIdx2 = SHI_LIST.indexOf(s.name);
+    const cnt2 = shiCount[shiIdx2] || 0;
+    if (cnt2 >= 2) {
+      // 丸の外側（中心から遠い方向）に×数を表示
+      const outX = cx + (innerR + 6) * Math.cos(s.angle * Math.PI / 180);
+      const outY = cy + (innerR + 6) * Math.sin(s.angle * Math.PI / 180);
+      svgHtml += '<text x="'+outX+'" y="'+outY+'" text-anchor="middle" dominant-baseline="middle" font-size="16" fill="#333" font-family="Kaisei Decol,serif" font-weight="bold" style="text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff;">×'+cnt2+'</text>';
+    }
+  });
+
+  // 陰陽マーク（白黒3Dグラデーション）
+  const yR = yinR;
+  svgHtml = svgHtml.replace('</defs>',
+    '<radialGradient id="gradWhite" cx="35%" cy="30%" r="75%">' +
+    '<stop offset="0%" stop-color="#ffffff"/>' +
+    '<stop offset="60%" stop-color="#d0d8e0"/>' +
+    '<stop offset="100%" stop-color="#8090a0"/>' +
+    '</radialGradient>' +
+    '<radialGradient id="gradBlack" cx="65%" cy="70%" r="75%">' +
+    '<stop offset="0%" stop-color="#606878"/>' +
+    '<stop offset="50%" stop-color="#202830"/>' +
+    '<stop offset="100%" stop-color="#000000"/>' +
+    '</radialGradient>' +
+    '<linearGradient id="gradRim" x1="0%" y1="0%" x2="100%" y2="100%">' +
+    '<stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>' +
+    '<stop offset="50%" stop-color="#607080"/>' +
+    '<stop offset="100%" stop-color="#202830"/>' +
+    '</linearGradient>' +
+    '</defs>');
+  // 白半円（左）
+  svgHtml += '<path d="M'+cx+','+(cy-yR)+' A'+yR+','+yR+' 0 0,0 '+cx+','+(cy+yR)+' A'+(yR/2)+','+(yR/2)+' 0 0,0 '+cx+','+cy+' A'+(yR/2)+','+(yR/2)+' 0 0,1 '+cx+','+(cy-yR)+' Z" fill="url(#gradWhite)"/>';
+  // 黒半円（右）
+  svgHtml += '<path d="M'+cx+','+(cy-yR)+' A'+yR+','+yR+' 0 0,1 '+cx+','+(cy+yR)+' A'+(yR/2)+','+(yR/2)+' 0 0,1 '+cx+','+cy+' A'+(yR/2)+','+(yR/2)+' 0 0,0 '+cx+','+(cy-yR)+' Z" fill="url(#gradBlack)"/>';
+  // 白の小円（黒側・下）
+  svgHtml += '<circle cx="'+cx+'" cy="'+(cy+yR/2)+'" r="'+(yR/5.5)+'" fill="url(#gradWhite)"/>';
+  // 黒の小円（白側・上）
+  svgHtml += '<circle cx="'+cx+'" cy="'+(cy-yR/2)+'" r="'+(yR/5.5)+'" fill="url(#gradBlack)"/>';
+  // 光沢リング
+  svgHtml += '<circle cx="'+cx+'" cy="'+cy+'" r="'+yR+'" fill="none" stroke="url(#gradRim)" stroke-width="3"/>';
+
+  svg.innerHTML = svgHtml;
+}
+
+
+
+
+
+
+// 八理図モーダル
+function openHaririzu() {
+  document.getElementById('haririzu-modal').style.display = 'flex';
+  document.getElementById('haririzu-modal-inner').style.animation = 'slideDown 0.35s cubic-bezier(0.34,1.56,0.64,1) both';
+}
+function closeHaririzu() {
+  const inner = document.getElementById('haririzu-modal-inner');
+  inner.classList.add('closing');
+  setTimeout(() => {
+    document.getElementById('haririzu-modal').style.display = 'none';
+    inner.classList.remove('closing');
+  }, 250);
+}
+document.addEventListener('DOMContentLoaded', function() {
+  const hm = document.getElementById('haririzu-modal');
+  if (hm) hm.addEventListener('click', function(e) {
+    if (e.target === this) closeHaririzu();
+  });
+});
+
+// レベルモーダル
+const LEVEL_TABLE = [
+  { min:6, max:99, label:'×6以上', desc:'絶対基準として超強く出てきてしまう力' },
+  { min:5, max:5,  label:'×5',    desc:'潜在的にも強く出てきてしまう力' },
+  { min:4, max:4,  label:'×4',    desc:'どうしても強い意識が出てきてしまう力' },
+  { min:3, max:3,  label:'×3',    desc:'無意識でも使える強い力' },
+  { min:2, max:2,  label:'×2',    desc:'意識的に使える力' },
+  { min:1, max:1,  label:'×1',    desc:'強く意識すれば使えるが、長時間は消耗する力' },
+  { min:0, max:0,  label:'×0',    desc:'そもそもその視点がデフォルトにない' },
+];
+
+function openLevelModal() {
+  const modal = document.getElementById('level-modal');
+  const content = document.getElementById('level-modal-content');
+  
+  // kanCountをグローバルに保持してるか確認、なければ空テーブル
+  const counts = window._kanCount || {};
+  const KAN = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+  const KAN_DATA_M = {
+    '甲':{ icon:'🌳', name:'木' }, '乙':{ icon:'🌼', name:'草花' },
+    '丙':{ icon:'☀️', name:'太陽' }, '丁':{ icon:'🕯️', name:'灯火' },
+    '戊':{ icon:'🗻', name:'山' }, '己':{ icon:'🌾', name:'畑' },
+    '庚':{ icon:'⚔️', name:'剣' }, '辛':{ icon:'💎', name:'宝石' },
+    '壬':{ icon:'🌊', name:'河' }, '癸':{ icon:'🌧️', name:'霧雨' },
+  };
+
+  // 八理図と同じソート順を使用
+  const sorted = window._sorted || KAN.slice().sort((a,b) => (counts[b]||0) - (counts[a]||0));
+
+  let html = '<table style="width:100%;border-collapse:collapse;font-family:Kaisei Decol,serif;">';
+  html += '<tr style="border-bottom:2px solid rgba(184,134,11,0.3);">';
+  html += '<th style="padding:8px;text-align:left;color:var(--muted);font-size:12px;">素材</th>';
+  html += '<th style="padding:8px;text-align:center;color:var(--muted);font-size:12px;">量</th>';
+  html += '<th style="padding:8px;text-align:left;color:var(--muted);font-size:12px;">レベル</th>';
+  html += '</tr>';
+
+  sorted.forEach(k => {
+    const cnt = counts[k] || 0;
+    const d = KAN_DATA_M[k];
+    const level = LEVEL_TABLE.find(l => cnt >= l.min && cnt <= l.max);
+    html += '<tr style="border-bottom:1px solid rgba(184,134,11,0.1);">';
+    html += '<td style="padding:10px 8px;text-align:center;width:44px;"><div style="font-size:22px;line-height:1;">' + d.icon + '</div><div style="font-size:11px;color:var(--ink);font-weight:bold;">' + d.name + '</div></td>';
+    html += '<td style="padding:10px 8px;text-align:left;font-size:14px;font-weight:bold;color:var(--ink);">×' + cnt + '</td>';
+    html += '<td style="padding:10px 8px;font-size:12px;color:var(--muted);">' + (level ? level.desc : '') + '</td>';
+    html += '</tr>';
+  });
+  html += '</table>';
+
+  content.innerHTML = html;
+  modal.style.display = 'flex';
+}
+
+function closeLevelModal() {
+  const inner = document.getElementById('level-modal-inner');
+  inner.classList.add('closing');
+  setTimeout(() => {
+    document.getElementById('level-modal').style.display = 'none';
+    inner.classList.remove('closing');
+  }, 250);
+}
+
+// モーダル外クリックで閉じる
+document.addEventListener('DOMContentLoaded', function() {
+  const lm = document.getElementById('level-modal');
+  if (lm) lm.addEventListener('click', function(e) {
+    if (e.target === this) closeLevelModal();
+  });
+});
+
+// 素材モーダル
+const SOZAI_IMAGES = {
+  '甲': { name:'木の力', html:`
+<div style="font-family:Noto Serif JP,serif;font-size:13px;line-height:1.8;color:var(--ink);">
+
+  <!-- ヘッダー -->
+  <div style="background:linear-gradient(135deg,#4caf50,#2e7d32);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:white;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+      <div style="font-size:22px;font-weight:bold;">🌳 木の力</div>
+      <div style="font-size:12px;letter-spacing:1px;opacity:0.9;">甲・木の陽</div>
+    </div>
+    <div style="font-size:12px;letter-spacing:2px;">方向・貫通・上昇・直進・継続的伸長</div>
+  </div>
+
+  <!-- この力の核心 -->
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #4caf50;padding-left:8px;">■ この力の核心</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+    <span style="background:#e8f5e9;border-radius:6px;padding:6px 10px;font-size:12px;">1. 方向を決める力</span>
+    <span style="background:#e8f5e9;border-radius:6px;padding:6px 10px;font-size:12px;">2. まっすぐ貫く力</span>
+    <span style="background:#e8f5e9;border-radius:6px;padding:6px 10px;font-size:12px;">3. 筋を通して進む力</span>
+    <span style="background:#e8f5e9;border-radius:6px;padding:6px 10px;font-size:12px;">4. 成長する力</span>
+    <span style="background:#e8f5e9;border-radius:6px;padding:6px 10px;font-size:12px;">5. 止まっては伸びる力</span>
+  </div>
+
+  <!-- 自然と出てくる意志 -->
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #4caf50;padding-left:8px;">■ この力があるから自然と出てくる意志</p>
+  <div style="background:#f1f8e9;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+    <ul style="margin:0;padding-left:16px;line-height:2;">
+      <li>やりたい方向に進みたい</li>
+      <li>自分で決めた道を、自分の足で歩みたい</li>
+      <li>筋を通して、まっすぐ進みたい</li>
+      <li>本心と行動を一致させていたい</li>
+      <li>やると決めたことを、貫きたい</li>
+      <li>成長を感じていたい</li>
+      <li>昨日より今日、前に進み続けたい</li>
+    </ul>
+    <p style="color:#2e7d32;font-size:12px;margin-top:8px;font-weight:bold;">木の力は、人を押しのけたいわけじゃない。「やりたい方向に、嘘なく進み続けたい」だけ。</p>
+    <p style="font-size:12px;margin-top:4px;">この力が強いほど、これらの思いが「これが普通」「これが当たり前」として感じやすくなります。自分の価値観や正義感の軸になっていくのが、木の力の特徴です。</p>
+  </div>
+
+  <!-- 仕事・人間関係 -->
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e3f2fd;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">💻 仕事</p>
+      <p style="font-size:12px;">方向性を決める場面で、数字より「これだ」という感覚や手応えを優先しやすい。成果より「成長できているか」がモチベーションの核になりやすい。</p>
+    </div>
+    <div style="flex:1;background:#fff8e1;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">🥂 人間関係</p>
+      <p style="font-size:12px;">「本心で話してほしい」という気持ちが自然と出やすい。本音を言わずに曖昧にしている相手に違和感を感じやすい。</p>
+    </div>
+  </div>
+
+  <!-- A面・B面 -->
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #4caf50;padding-left:8px;">■ A面・B面モード</p>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;border:1px solid #a5d6a7;">
+      <p style="font-weight:bold;color:#2e7d32;margin-bottom:6px;">A面｜素直モード</p>
+      <p style="font-size:12px;">方向を持ちながら、周りも自然と視野に入っている。迷いや立ち止まりも「成長のプロセス」として受け取れている。本心で進みながら、相手のことも見えている。</p>
+    </div>
+    <div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;border:1px solid #f48fb1;">
+      <p style="font-weight:bold;color:#c62828;margin-bottom:6px;">B面｜武装モード</p>
+      <p style="font-size:12px;">「やりたい方向に進みたい」が「〜しなければいけない」「〜であるべき」に変わっていく。自分の正しさを守ろうとして、視野が狭くなっていく状態。</p>
+    </div>
+  </div>
+
+  <!-- B面武装モードパターン -->
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #4caf50;padding-left:8px;">■ B面武装モードパターン</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;">
+    <p style="color:#c62828;">B面は悪いことじゃない。今までの使い方では通用しなくなってきたサイン。器が広がっていく、次のフェーズへ向かっている大切なプロセス。</p>
+  </div>
+  <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+    <p style="font-weight:bold;margin-bottom:4px;">🏛️ 理論武装型</p>
+    <p style="font-size:12px;">感情や迷いを認めず、筋・方向・信念で固める。相手の感情を「方向性のない話」として無効化しやすくなる。</p>
+  </div>
+  <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:16px;">
+    <p style="font-weight:bold;margin-bottom:4px;">😶 演技型</p>
+    <p style="font-size:12px;">本当は迷っていても「やりたい方向が見えている人」「成長している人」を演じる。迷いや悩んで立ち止まっている自分を一切見せない。</p>
+    <p style="font-size:11px;color:var(--muted);margin-top:6px;border-top:1px solid #eee;padding-top:6px;">事例：「やっています、進んでいます」という姿を出し続けながら、内心「この方向で本当にいいのか」と迷っていることがある。SNSや周りへの発信では成長×充実した前進を演出しやすい。</p>
+  </div>
+
+  <!-- 締め -->
+  <div style="background:#f1f8e9;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#2e7d32;">
+    <p>「私は木そのものではなく、私は木の力を持っている」</p>
+    <p style="margin-top:4px;font-size:12px;color:var(--muted);">素材の力と自分を切り離せる瞬間が、メタ認知の始まりであり、自己受容の入口です。</p>
+  </div>
+
+</div>
+` },
+  '乙': { name:'草花の力', html:`
+<div style="font-family:Noto Serif JP,serif;font-size:13px;line-height:1.8;color:var(--ink);">
+  <div style="background:linear-gradient(135deg,#f48fb1,#c2185b);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:white;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+      <div style="font-size:22px;font-weight:bold;">🌼 草花の力</div>
+      <div style="font-size:12px;letter-spacing:1px;opacity:0.9;">乙・木の陰</div>
+    </div>
+    <div style="font-size:12px;letter-spacing:2px;">しなやか・適応・無理しない・広くつながる・居場所を分散</div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #c2185b;padding-left:8px;">■ この力の核心</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">1. しなって戻る力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">2. 適応調整する力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">3. 無理しない力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">4. 軽やかに広くつながる力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">5. 居場所を分散する力</span></div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #c2185b;padding-left:8px;">■ この力があるから自然と出てくる意志</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+    <ul style="margin:0;padding-left:16px;line-height:2;"><li>どんな場でも、しなやかに対応できる自分でいたい</li><li>穏やかに関わり続けたい</li><li>無理をしないでいたい</li><li>波風を立てず、角を立てずにいたい</li><li>色んな人とゆるく、広くつながっていたい</li><li>安心できる関係を続けたい</li><li>居場所をいくつか持っていたい（複数のところに顔を出して関わる）</li></ul>
+    <p style="color:#c2185b;font-size:12px;margin-top:8px;font-weight:bold;">草花の力は、人を避けたいわけじゃない。「穏やかに、無理なく、軽やかに関わり続けたい」だけ。</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e3f2fd;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">💻 仕事</p>
+      <p style="font-size:12px;">場の空気を読みながら、角が立たない対応を自然に選びやすい。無理だと感じる前に限界をキャッチして、ペースを調整しやすい。</p>
+    </div>
+    <div style="flex:1;background:#fff8e1;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">🥂 人間関係</p>
+      <p style="font-size:12px;">一つの場所や人に依存せず、複数の居場所を自然に持ちやすい。深く向き合うより、軽やかに広く関わる方が力が出やすい。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #c2185b;padding-left:8px;">■ A面・B面モード</p>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;border:1px solid #a5d6a7;">
+      <p style="font-weight:bold;color:#2e7d32;margin-bottom:6px;">A面｜素直モード</p>
+      <p style="font-size:12px;">しなやかに場に合わせながら、自分のペースも保てている。無理しない選択を素直に取れて、広い関わりの中で安心感を持てている。</p>
+    </div>
+    <div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;border:1px solid #f48fb1;">
+      <p style="font-weight:bold;color:#c62828;margin-bottom:6px;">B面｜武装モード</p>
+      <p style="font-size:12px;">「穏やかに関わりたい」が「衝突してはいけない」「本音を言ってはいけない」に変わっていく。しんどさを隠しながら関係を維持しようとする状態。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #c2185b;padding-left:8px;">■ B面武装モードパターン</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;">
+    <p style="color:#c62828;">B面は悪いことじゃない。今までの使い方では通用しなくなってきたサイン。器が広がっていく、次のフェーズへ向かっている大切なプロセス。</p>
+  </div>
+  
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">😶 依存型</p>
+      <p style="font-size:12px;">誰か強い人・信頼できる人に巻き付いて、感情で関係を縛る。「あの人がそう言ってたから」と判断を預け、自分では決めない。友達や特定の誰かがいないと、不安で仕方がない。</p>
+      
+    </div>
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">▪️ 回避型</p>
+      <p style="font-size:12px;">無理をしたくないことを優先して、深い話になりそうな場から静かに離れ、適当に相槌・誤魔化しをしてフェードアウトしていく。</p>
+      <p style='font-size:11px;color:var(--muted);margin-top:6px;border-top:1px solid #eee;padding-top:6px;'>事例：衝突しそうな話題や一対一で深く向き合うことになると急に話題を変えたり、「忙しい」を理由に関わりを減らしたりしやすい。向き合うことへの恐怖から、気づいたら大切な関係からも静かに遠ざかっていることがある</p>
+    </div>
+  <div style="background:#fce4ec;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#c2185b;margin-top:8px;">
+    <p>「私は草花そのものではなく、私は草花の力を持っている」。</p>
+    <p style="margin-top:4px;font-size:12px;color:var(--muted);">素材の力と自分を切り離せる瞬間が、メタ認知の始まりであり、自己受容の入口です。</p>
+  </div>
+</div>` },
+  '丙': { name:'太陽の力', html:`
+<div style="font-family:Noto Serif JP,serif;font-size:13px;line-height:1.8;color:var(--ink);">
+  <div style="background:linear-gradient(135deg,#ff7788,#900010);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:white;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+      <div style="font-size:22px;font-weight:bold;">☀️ 太陽の力</div>
+      <div style="font-size:12px;letter-spacing:1px;opacity:0.9;">丙・火の陽</div>
+    </div>
+    <div style="font-size:12px;letter-spacing:2px;">熱・表現・見える化・拡散・反応循環</div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #c62828;padding-left:8px;">■ この力の核心</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">1. 気持ちに熱が入る力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">2. 感じたことがそのまま出る力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">3. 見える化する力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">4. 熱を乗せて広げる力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">5. 反応を見て熱が増す力</span></div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #c62828;padding-left:8px;">■ この力があるから自然と出てくる意志</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+    <ul style="margin:0;padding-left:16px;line-height:2;"><li>面白い、いいと思ったことに、素直に熱く反応したい</li><li>感じたことを、そのまま外に出したい</li><li>気づきや面白さを、言葉や見える形にしたい</li><li>自分の気持ちや想いを、相手に届けたい</li><li>面白さや良さを、その時の気持ちごと人に伝えたい</li><li>反応を受け取りながら、また行動していきたい</li><li>みんなを元気にしたい</li></ul>
+    <p style="color:#c62828;font-size:12px;margin-top:8px;font-weight:bold;">太陽の力は、目立ちたいわけじゃない。「感じた熱を出して、伝えて、出会う人みんなを元気にしたい」だけ。</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e3f2fd;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">💻 仕事</p>
+      <p style="font-size:12px;">面白い、いいと感じた瞬間に内側から熱が湧いて行動の起点になりやすい。反応が返ってくるほどやる気の熱が増して次の行動が自然に生まれやすい。</p>
+    </div>
+    <div style="flex:1;background:#fff8e1;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">🥂 人間関係</p>
+      <p style="font-size:12px;">感じたことが表情や言葉にそのまま出やすい。リアクションが隠せないからこそ、良くも悪くも相手に熱や気持ちが自然と届きやすい。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #c62828;padding-left:8px;">■ A面・B面モード</p>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;border:1px solid #a5d6a7;">
+      <p style="font-weight:bold;color:#2e7d32;margin-bottom:6px;">A面｜素直モード</p>
+      <p style="font-size:12px;">感じた熱や気持ちを惜しみなく出せている。全体を俯瞰しながら気づきや想いを自然に言葉にして、周りと共有できている。反応を受け取るたびに熱が増して、次の行動が自然に生まれていく。</p>
+    </div>
+    <div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;border:1px solid #f48fb1;">
+      <p style="font-weight:bold;color:#c62828;margin-bottom:6px;">B面｜武装モード</p>
+      <p style="font-size:12px;">「感じたことを伝えたい」が「反応がないと自分がダメだ」に変わっていく。反応を求めて熱を出し続けるうちに、視野が狭くなっていく状態。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #c62828;padding-left:8px;">■ B面武装モードパターン</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;">
+    <p style="color:#c62828;">B面は悪いことじゃない。今までの使い方では通用しなくなってきたサイン。器が広がっていく、次のフェーズへ向かっている大切なプロセス。</p>
+  </div>
+  
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">😶 演技型</p>
+      <p style="font-size:12px;">本当は傷ついているのに「大丈夫」「私は元気」をやり続ける。反応がなくて落ち込んでいても明るく振る舞い続け、暗く落ち込むことは周りに迷惑をかけることだと感じている。</p>
+      
+    </div>
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">▪️ 回避型</p>
+      <p style="font-size:12px;">反応しない相手、感情を出さない相手を感情的に責める。「ノリ悪い」「つまらない」と相手を切り捨て、自分の熱を受け取ってもらえなかった相手を責めることで安しようとする。</p>
+      <p style='font-size:11px;color:var(--muted);margin-top:6px;border-top:1px solid #eee;padding-top:6px;'>事例：一生懸命話しているのに相手の反応が薄いと「なんで反応してくれないの？」と詰めてしまうことがある。リアクションが薄い人・暗い人を見下したり、場の空気を壊していると感じてしまいやすい。</p>
+    </div>
+  <div style="background:#fce4ec;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#c62828;margin-top:8px;">
+    <p>「私は太陽そのものではなく、私は太陽の力を持っている」。</p>
+    <p style="margin-top:4px;font-size:12px;color:var(--muted);">素材の力と自分を切り離せる瞬間が、メタ認知の始まりであり、自己受容の入口です。</p>
+  </div>
+</div>` },
+  '丁': { name:'灯火の力', html:`
+<div style="font-family:Noto Serif JP,serif;font-size:13px;line-height:1.8;color:var(--ink);">
+  <div style="background:linear-gradient(135deg,#ff8a65,#bf360c);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:white;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+      <div style="font-size:22px;font-weight:bold;">🕯️ 灯火の力</div>
+      <div style="font-size:12px;letter-spacing:1px;opacity:0.9;">丁・火の陰</div>
+    </div>
+    <div style="font-size:12px;letter-spacing:2px;">陰を感知・大切な一点・深く集中・寄り添い・尊厳を護る</div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #bf360c;padding-left:8px;">■ この力の核心</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">1. 陰を感知する力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">2. 大切な一点にきづく力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">3. 一点に深く集中する力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">4. 寄り添って安心させる力</span><span style="background:#fce4ec;border-radius:6px;padding:6px 10px;font-size:12px;">5. 尊厳を護る力</span></div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #bf360c;padding-left:8px;">■ この力があるから自然と出てくる意志</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+    <ul style="margin:0;padding-left:16px;line-height:2;"><li>暗闇にいる人の困り事や苦しさに、気づいてあげたい</li><li>見落とされている大切なことを、見つけてあげたい</li><li>今いちばん必要な一点に、ちゃんと向き合いたい</li><li>必要な人や場面に、深く集中して関わりたい</li><li>不安や悲しさの中にいる相手に、寄り添いたい</li><li>迷い悩んでいる相手を、安心させてあげたい</li><li>自分と相手の尊厳が守られる関わり方をしたい</li></ul>
+    <p style="color:#bf360c;font-size:12px;margin-top:8px;font-weight:bold;">灯火の力は、目立ちたいわけじゃない。「暗闇にいる人に気づいて、そっと寄り添い、安心させたい」だけ。</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e3f2fd;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">💻 仕事</p>
+      <p style="font-size:12px;">みんなが気づかない暗がりにいる人の悩みや困りごとが自然と目に入りやすい。広く浅くより、必要な人や場面に深く集中して関わる方が力が出やすい。</p>
+    </div>
+    <div style="flex:1;background:#fff8e1;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">🥂 人間関係</p>
+      <p style="font-size:12px;">言葉にされていない感情や小さな違和感を見落とさない。不安や悲しさの中にいる相手に、そっと寄り添える。相手の感情を否定せずに見守ろうとする。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #bf360c;padding-left:8px;">■ A面・B面モード</p>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;border:1px solid #a5d6a7;">
+      <p style="font-weight:bold;color:#2e7d32;margin-bottom:6px;">A面｜素直モード</p>
+      <p style="font-size:12px;">暗がりにいる人の悲しさや苦しさが自然と目に入り、気づいて助けたいという気持ちが素直に立ち上がる。相手の感情をそのまま受け取り、安心できる場所になれている。</p>
+    </div>
+    <div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;border:1px solid #f48fb1;">
+      <p style="font-weight:bold;color:#c62828;margin-bottom:6px;">B面｜武装モード</p>
+      <p style="font-size:12px;">「寄り添いたい」が「気づいてもらえないと自分がダメだ」「尊重されないと許せない」に変わっていく。自分が消耗しているのに気づかず、関わり続けようとする状態。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #bf360c;padding-left:8px;">■ B面武装モードパターン</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;">
+    <p style="color:#c62828;">B面は悪いことじゃない。今までの使い方では通用しなくなってきたサイン。器が広がっていく、次のフェーズへ向かっている大切なプロセス。</p>
+  </div>
+  
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">😶 演技型</p>
+      <p style="font-size:12px;">本当は傷ついているのに「大丈夫」「分かってる」をやり続ける。寄り添ってもらえなくて落ち込んでいても気丈に振る舞い続け、気持ちを言ったら「疲れる」と思われると感じている。</p>
+      
+    </div>
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">▪️ 依存型</p>
+      <p style="font-size:12px;">寄り添ってくれる相手に過度にしがみつくか、相手を自分に依存させることで離れさせなくなる。「あなただけが私に寄り添ってくれる」と特定の相手に全部預け、「助けてほしい」と頼り続けた相手が少しでも応えられないと、一気に心を閉じやすい。</p>
+      <p style='font-size:11px;color:var(--muted);margin-top:6px;border-top:1px solid #eee;padding-top:6px;'>事例：一寄り添ってくれる相手に過度にしがみつくか、相手を自分に依存させることで離れさせなくなる。「あなただけが私に寄り添ってくれる」と特定の相手に全部預け、「助けてほしい」と頼り続けた相手が少しでも応えられないと、一気に心を閉じやすい。</p>
+    </div>
+  <div style="background:#fce4ec;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#bf360c;margin-top:8px;">
+    <p>「私は灯火そのものではなく、私は灯火の力を持っている」。</p>
+    <p style="margin-top:4px;font-size:12px;color:var(--muted);">素材の力と自分を切り離せる瞬間が、メタ認知の始まりであり、自己受容の入口です。</p>
+  </div>
+</div>` },
+  '戊': { name:'山の力', html:`
+<div style="font-family:Noto Serif JP,serif;font-size:13px;line-height:1.8;color:var(--ink);">
+  <div style="background:linear-gradient(135deg,#a1887f,#4e342e);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:white;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+      <div style="font-size:22px;font-weight:bold;">🗻 山の力</div>
+      <div style="font-size:12px;letter-spacing:1px;opacity:0.9;">戊・土の陽</div>
+    </div>
+    <div style="font-size:12px;letter-spacing:2px;">全体を見て様子をみる・積み重ねる・安定した形にする・安定を守る・動かない</div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #5d4037;padding-left:8px;">■ この力の核心</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"><span style="background:#efebe9;border-radius:6px;padding:6px 10px;font-size:12px;">1. 全体を見て、様子をみる力</span><span style="background:#efebe9;border-radius:6px;padding:6px 10px;font-size:12px;">2. 積み重ねる力</span><span style="background:#efebe9;border-radius:6px;padding:6px 10px;font-size:12px;">3. 安定した形にする力</span><span style="background:#efebe9;border-radius:6px;padding:6px 10px;font-size:12px;">4. 安定を守る力</span><span style="background:#efebe9;border-radius:6px;padding:6px 10px;font-size:12px;">5. 動かない力</span></div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #5d4037;padding-left:8px;">■ この力があるから自然と出てくる意志</p>
+  <div style="background:#efebe9;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+    <ul style="margin:0;padding-left:16px;line-height:2;"><li>全体を見て、焦らず様子を見たい</li><li>経験や体験を積み重ねていきたい</li><li>安定した形を作りたい</li><li>生活・仕事・人間関係を安定させていたい</li><li>安定したものを続かせていたい</li><li>自分のやり方やスタイルを守りたい</li><li>安定した場所に居続けたい</li></ul>
+    <p style="color:#5d4037;font-size:12px;margin-top:8px;font-weight:bold;">山の力は、人を避けたいわけじゃない。「安定した形の中で、積み重ねながら居続けたい」だけ。</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e3f2fd;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">💻 仕事</p>
+      <p style="font-size:12px;">焦らず全体を見ながら、安定するか様子をみてから動きやすい。地道に積み重ねることで自分の土台が厚くなっていくのを感じやすい。急な変更や方針転換には強い抵抗感が出やすい。</p>
+    </div>
+    <div style="flex:1;background:#fff8e1;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">🥂 人間関係</p>
+      <p style="font-size:12px;">長く安定して続く関係を大切にしやすい。自分のスタイルや基準を持ちながら、そこにいるだけで周囲の支えになりやすい。急に変化を求めてくる相手に違和感を感じやすい。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #5d4037;padding-left:8px;">■ A面・B面モード</p>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;border:1px solid #a5d6a7;">
+      <p style="font-weight:bold;color:#2e7d32;margin-bottom:6px;">A面｜素直モード</p>
+      <p style="font-size:12px;">落ち着いて全体を見ながら、自然と信頼できるものを見極められている。経験を重ねながら、みんなが安定する土台になり、周囲を支えていく。自分の土台も着実に厚くなっていくのを感じられている。</p>
+    </div>
+    <div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;border:1px solid #f48fb1;">
+      <p style="font-weight:bold;color:#c62828;margin-bottom:6px;">B面｜武装モード</p>
+      <p style="font-size:12px;">「安定した形を守りたい」が「変えてはいけない」「動いてはいけない」に変わっていく。不安定になりそうなものを全部遮断して、変化を拒む状態。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #5d4037;padding-left:8px;">■ B面武装モードパターン</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;">
+    <p style="color:#c62828;">B面は悪いことじゃない。今までの使い方では通用しなくなってきたサイン。器が広がっていく、次のフェーズへ向かっている大切なプロセス。</p>
+  </div>
+  
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">🏛️ 理論武装型</p>
+      <p style="font-size:12px;">「私のやり方が正しい」「変える必要なんてない」と正当化する。「今まで続いてきたんだから問題ない」と自分のやり方を正解にして、相手の提案や変化を「実績がない」として無効化しやすくなる。</p>
+      
+    </div>
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">▪️ 回避型</p>
+      <p style="font-size:12px;">不安定になりそうな場面を避ける。変化や新しい話になりそうな場から静かに離れ、返事しない・既読スルー・全部他人任せにしやすい。</p>
+      <p style='font-size:11px;color:var(--muted);margin-top:6px;border-top:1px solid #eee;padding-top:6px;'>事例：新しい提案や変化を求められると急に話題を変えたり、「今はその時期じゃない」「もう少し様子を見る」を繰り返して動かないでいることがある。不安定になりそうな話題が出ると、気づいたら全部他人任せになっていることがある。</p>
+    </div>
+  <div style="background:#efebe9;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#5d4037;margin-top:8px;">
+    <p>「私は山そのものではなく、私は山の力を持っている」。</p>
+    <p style="margin-top:4px;font-size:12px;color:var(--muted);">素材の力と自分を切り離せる瞬間が、メタ認知の始まりであり、自己受容の入口です。</p>
+  </div>
+</div>` },
+  '己': { name:'畑の力', html:`
+<div style="font-family:Noto Serif JP,serif;font-size:13px;line-height:1.8;color:var(--ink);">
+  <div style="background:linear-gradient(135deg,#ffca28,#ff8f00);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:white;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+      <div style="font-size:22px;font-weight:bold;">🌾 畑の力</div>
+      <div style="font-size:12px;letter-spacing:1px;opacity:0.9;">己・土の陰</div>
+    </div>
+    <div style="font-size:12px;letter-spacing:2px;">全部受け入れる・栄養にする・共存・熟成・自分なりの納得</div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #f57f17;padding-left:8px;">■ この力の核心</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"><span style="background:#fff8e1;border-radius:6px;padding:6px 10px;font-size:12px;">1. 一旦全て受け入れようとする力</span><span style="background:#fff8e1;border-radius:6px;padding:6px 10px;font-size:12px;">2. 全部を栄養にしようとする力</span><span style="background:#fff8e1;border-radius:6px;padding:6px 10px;font-size:12px;">3. 全部を共存させていく力</span><span style="background:#fff8e1;border-radius:6px;padding:6px 10px;font-size:12px;">4. 時間をかけて熟成させていく力</span><span style="background:#fff8e1;border-radius:6px;padding:6px 10px;font-size:12px;">5. 自分なりの納得を育てる力</span></div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #f57f17;padding-left:8px;">■ この力があるから自然と出てくる意志</p>
+  <div style="background:#fff8e1;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+    <ul style="margin:0;padding-left:16px;line-height:2;"><li>目の前の人や出来事を、いったん全部受け入れたい</li><li>嫌なことも、矛盾も、経験も、全部自分の栄養にしていきたい</li><li>相反する考えや感情も、切り捨てずにそのまま共存させていたい</li><li>白黒つけず、どちらの気持ちも分かる自分でいたい</li><li>時間をかけて深掘りしながら、自分なりの納得にたどり着きたい</li><li>自分なりの考えや答えを育てていきたい</li><li>自分の中で育てたものが、自然にみんなの糧や安心になっていたい</li></ul>
+    <p style="color:#f57f17;font-size:12px;margin-top:8px;font-weight:bold;">畑の力は、抱え込んでいるわけじゃない。優柔不断なわけじゃない。「全部受け入れて、自分なりの納得を育てて、みんなの糧になりたい」だけ。</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e3f2fd;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">💻 仕事</p>
+      <p style="font-size:12px;">知識も、情報も、矛盾も、全部栄養にしようとする。時間をかけて深掘りしながら新しい知識も吸収して、時間が経つほどじわじわ腑に落ちてくる。即断即決より、熟成してから動く方が力が出やすい。</p>
+    </div>
+    <div style="flex:1;background:#fff8e1;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">🥂 人間関係</p>
+      <p style="font-size:12px;">相反する考えや感情も、どちらかを切り捨てずにそのまま抱えておける。「どっちも分かる」「どれも一理ある」と自然に感じやすい。だからこそ、誰のそばにいても安心感を与えやすい。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #f57f17;padding-left:8px;">■ A面・B面モード</p>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;border:1px solid #a5d6a7;">
+      <p style="font-weight:bold;color:#2e7d32;margin-bottom:6px;">A面｜素直モード</p>
+      <p style="font-size:12px;">目の前の人や出来事、知識や情報を、良し悪しを決めずに素直に受け入れ、自分の中に取り込んでいる。嫌なことも、矛盾も、経験も、全部意味があるものとして素直に受け取り、糧にしようとしている。</p>
+    </div>
+    <div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;border:1px solid #f48fb1;">
+      <p style="font-weight:bold;color:#c62828;margin-bottom:6px;">B面｜武装モード</p>
+      <p style="font-size:12px;">「全部受け入れてきた」という積み重ねが「私の方が分かっている」という鎧になっていく。深く考えない相手・即断する相手を「浅い」と感じて、視野が狭くなっていく状態。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #f57f17;padding-left:8px;">■ B面武装モードパターン</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;">
+    <p style="color:#c62828;">B面は悪いことじゃない。今までの使い方では通用しなくなってきたサイン。器が広がっていく、次のフェーズへ向かっている大切なプロセス。</p>
+  </div>
+  
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">😟 ネガティブ型</p>
+      <p style="font-size:12px;">「どうせ納得できない」「どうせ共感してくれない」と、先に諦めて傷つかないようにする。動く前から「私には答えが出せない」「私の理解は遅いから」と自分で決めつけて、深く向き合うことをやめていく。</p>
+      
+    </div>
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">🏛️ 理論武装型</p>
+      <p style="font-size:12px;">全部受け入れて、共感して、矛盾も人の気持ちも全部考えて育ててきた自負が、「私の考えが正しい」という鎧になる。「これだけ時間をかけて考えたんだから、私の方が正しい」と自分の納得を正解にして、深く考えない相手を「あなたはそこまで考えてない」と無効化しやすくなる。</p>
+      <p style='font-size:11px;color:var(--muted);margin-top:6px;border-top:1px solid #eee;padding-top:6px;'>事例：議論になると「私はちゃんと全部受け入れてきた」「あなたの気持ちも考えてきた」と過去の溜め続けたものを盾にしやすい。反論されるほど「やっぱりあなたは浅い」と確信に変わり、理論の鎧が厚くなっていくことがある。</p>
+    </div>
+  <div style="background:#fff8e1;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#f57f17;margin-top:8px;">
+    <p>「私は畑そのものではなく、私は畑の力を持っている」。</p>
+    <p style="margin-top:4px;font-size:12px;color:var(--muted);">素材の力と自分を切り離せる瞬間が、メタ認知の始まりであり、自己受容の入口です。</p>
+  </div>
+</div>` },
+  '庚': { name:'剣の力', html:`
+<div style="font-family:Noto Serif JP,serif;font-size:13px;line-height:1.8;color:var(--ink);">
+  <div style="background:linear-gradient(135deg,#90a4ae,#37474f);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:white;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+      <div style="font-size:22px;font-weight:bold;">⚔️ 剣の力</div>
+      <div style="font-size:12px;letter-spacing:1px;opacity:0.9;">庚・金の陽</div>
+    </div>
+    <div style="font-size:12px;letter-spacing:2px;">区切る・判断して決める・断つ・最短で進める・一点集中して終わらせる</div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #455a64;padding-left:8px;">■ この力の核心</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"><span style="background:#eceff1;border-radius:6px;padding:6px 10px;font-size:12px;">1. 区切る力</span><span style="background:#eceff1;border-radius:6px;padding:6px 10px;font-size:12px;">2. 判断して決める力</span><span style="background:#eceff1;border-radius:6px;padding:6px 10px;font-size:12px;">3. 断つ力</span><span style="background:#eceff1;border-radius:6px;padding:6px 10px;font-size:12px;">4. 最短で進める力</span><span style="background:#eceff1;border-radius:6px;padding:6px 10px;font-size:12px;">5. 一点集中して終わらせる力</span></div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #455a64;padding-left:8px;">■ この力があるから自然と出てくる意志</p>
+  <div style="background:#eceff1;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+    <ul style="margin:0;padding-left:16px;line-height:2;"><li>区切って判断したい</li><li>はっきり決めたい、ゴールを明確にしたい</li><li>迷いをなくしたい</li><li>無駄を断ち切りたい</li><li>最短で着地させたい</li><li>決めたら、やり遂げたい</li><li>決着をつけて、終わらせたい</li></ul>
+    <p style="color:#455a64;font-size:12px;margin-top:8px;font-weight:bold;">剣の力は、攻撃したいわけじゃない。「混乱を減らして、進める状態をつくりたい」だけ。</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e3f2fd;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">💻 仕事</p>
+      <p style="font-size:12px;">曖昧な状態を一点に定め、核心・結論・ゴールを明確にしやすい。迷い・不要・無駄・停滞を削ぎ落として最短ルートに整えやすい。決まったら一気にやる、決断後の実行スピードが速い。</p>
+    </div>
+    <div style="flex:1;background:#fff8e1;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">🥂 人間関係</p>
+      <p style="font-size:12px;">話を聞きながら核心・結論を探していて、要点だけ抜くのが自然にできる。曖昧なまま続く関係より、はっきりした関係の方が安心しやすい。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #455a64;padding-left:8px;">■ A面・B面モード</p>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;border:1px solid #a5d6a7;">
+      <p style="font-weight:bold;color:#2e7d32;margin-bottom:6px;">A面｜素直モード</p>
+      <p style="font-size:12px;">自分・他者・状況・ゴールを誠実に見極めて判断している。核心を定め、自分も周囲も迷わない一点を作っている。関わる全員の時間を守るために、最も淀みのないルートを選んでいる。</p>
+    </div>
+    <div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;border:1px solid #f48fb1;">
+      <p style="font-weight:bold;color:#c62828;margin-bottom:6px;">B面｜武装モード</p>
+      <p style="font-size:12px;">「混乱を減らしたい」が「曖昧なものは切り捨てていい」「迷っている人は弱い」に変わっていく。白黒つけることで自分を守ろうとして、視野が狭くなっていく状態。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #455a64;padding-left:8px;">■ B面武装モードパターン</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;">
+    <p style="color:#c62828;">B面は悪いことじゃない。今までの使い方では通用しなくなってきたサイン。器が広がっていく、次のフェーズへ向かっている大切なプロセス。</p>
+  </div>
+  
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">🏛️ 理論武装型</p>
+      <p style="font-size:12px;">感情や迷いを認めず、正論・定義・構造で固める。「感情論ではなく」や「構造的にそれは違う」で詰め、相手の感情を「非論理的」として無効化しやすくなる。</p>
+      
+    </div>
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">☀️ 攻撃型</p>
+      <p style="font-size:12px;">正しさで切る。相手の曖昧さや迷いを責める。正論で詰める、ダメ出しで支配する。「なんでまだ決めてないの？」と圧をかけ、曖昧な人・迷っている人を見下しやすくなる。</p>
+      <p style='font-size:11px;color:var(--muted);margin-top:6px;border-top:1px solid #eee;padding-top:6px;'>事例：会議で結論が出ないと「で、どうするんですか」と詰めてしまうことがある。相手がまだ考え中なのに「それで進めます」と一方的に決めて動き出したり、迷っている人を「優柔不断」と切り捨ててしまうことがある。</p>
+    </div>
+  <div style="background:#eceff1;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#455a64;margin-top:8px;">
+    <p>「私は剣そのものではなく、私は剣の力を持っている」。</p>
+    <p style="margin-top:4px;font-size:12px;color:var(--muted);">素材の力と自分を切り離せる瞬間が、メタ認知の始まりであり、自己受容の入口です。</p>
+  </div>
+</div>` },
+  '辛': { name:'宝石の力', html:`
+<div style="font-family:Noto Serif JP,serif;font-size:13px;line-height:1.8;color:var(--ink);">
+  <div style="background:linear-gradient(135deg,#ce93d8,#6a1b9a);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:white;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+      <div style="font-size:22px;font-weight:bold;">💎 宝石の力</div>
+      <div style="font-size:12px;letter-spacing:1px;opacity:0.9;">辛・金の陰</div>
+    </div>
+    <div style="font-size:12px;letter-spacing:2px;">絶対音感・濁りが見える・完璧に磨く・何度も確かめる・より良くし続ける</div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #7b1fa2;padding-left:8px;">■ この力の核心</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"><span style="background:#f3e5f5;border-radius:6px;padding:6px 10px;font-size:12px;">1. 本来の美しさ・純度を見抜く絶対音感の力</span><span style="background:#f3e5f5;border-radius:6px;padding:6px 10px;font-size:12px;">2. 濁りが見えてしまう力</span><span style="background:#f3e5f5;border-radius:6px;padding:6px 10px;font-size:12px;">3. 完璧を目指して一点を磨いていく力</span><span style="background:#f3e5f5;border-radius:6px;padding:6px 10px;font-size:12px;">4. 本当にこれで完璧か何度も確かめる力</span><span style="background:#f3e5f5;border-radius:6px;padding:6px 10px;font-size:12px;">5. より良くし続けていく力</span></div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #7b1fa2;padding-left:8px;">■ この力があるから自然と出てくる意志</p>
+  <div style="background:#f3e5f5;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+    <ul style="margin:0;padding-left:16px;line-height:2;"><li>その人や物が本来持っている純粋さや美しさを、ちゃんと見たい</li><li>嘘や誤魔化し、雑さや甘さを、そのままにしておきたくない</li><li>「ここを良くすれば」という一点を、とことん磨きたい</li><li>本当にこれでいいか、何度も確かめたい</li><li>より良い形に、より良いものに、完璧に仕上げ合い</li><li>本来の純粋さや美しさが、ちゃんと見える状態にしたい</li><li>本物の価値が、本物として扱われる場所にあってほしい</li></ul>
+    <p style="color:#7b1fa2;font-size:12px;margin-top:8px;font-weight:bold;">宝石の力は、粗探しをしているわけじゃない。完璧主義なわけじゃない。「本来の純粋さや美しさを見抜いて、その価値を本物として扱いたい」だけ。</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e3f2fd;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">💻 仕事</p>
+      <p style="font-size:12px;">他人には「なぜそこ？」と思われるような細部にこだわりやすい。磨いた後も「本当にこれでいいか」と自分の基準と照らし合わせて、何度も確かめながら高いクオリティを自然に生み出しやすい。</p>
+    </div>
+    <div style="flex:1;background:#fff8e1;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">🥂 人間関係</p>
+      <p style="font-size:12px;">その人が本来持っている純粋な部分が自然と見えていて、それを素直に大切にしやすい。嘘や誤魔化し、雑さや甘さが見えても、責めるためではなく、より良くするために活かしやすい。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #7b1fa2;padding-left:8px;">■ A面・B面モード</p>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;border:1px solid #a5d6a7;">
+      <p style="font-weight:bold;color:#2e7d32;margin-bottom:6px;">A面｜素直モード</p>
+      <p style="font-size:12px;">その人や物が本来持っている純粋さや美しさが自然と見えていて、それを素直に大切にしている。濁りや甘さが見えても、責めるためではなく、より良くするために活かせている。</p>
+    </div>
+    <div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;border:1px solid #f48fb1;">
+      <p style="font-weight:bold;color:#c62828;margin-bottom:6px;">B面｜武装モード</p>
+      <p style="font-size:12px;">「本来の純粋さや美しさを守りたい」が「この基準に届かないものは認められない」に変わっていく。磨き続けてきた自負が鎧になり、基準の低い相手を無効化しやすくなっていく状態。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #7b1fa2;padding-left:8px;">■ B面武装モードパターン</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;">
+    <p style="color:#c62828;">B面は悪いことじゃない。今までの使い方では通用しなくなってきたサイン。器が広がっていく、次のフェーズへ向かっている大切なプロセス。</p>
+  </div>
+  
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">😶 演技型</p>
+      <p style="font-size:12px;">完璧にできない、認めてもらえない、本物として扱ってもらえない傷を、「大丈夫」「気にしてない」で隠し続ける。本音を言ったら「細かい」「面倒くさい」と思われる恐怖で、理解しているフリをして誤魔化しやすい。</p>
+      
+    </div>
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">☀️ 攻撃型</p>
+      <p style="font-size:12px;">本来の純粋さや美しさを見抜いて磨き続けてきた自負が、「私の基準が正しい」という鎧になる。「これだけ確かめて磨いてきたんだから、私の方が正しい」と自分の基準を正解にして、「あなたはそこまで見えていない」「本物が分かる？」と基準が低い相手を無効化しやすくなる。</p>
+      <p style='font-size:11px;color:var(--muted);margin-top:6px;border-top:1px solid #eee;padding-top:6px;'>事例：仕事でクオリティの話になると「私はちゃんと細部まで見てきた」「妥協せずにやってきた」と過去の積み重ねを盾にしやすい。磨き続けてきた分だけ「私の方が分かっている」という確信が強くなり、相手の感覚を「センスがない」「基準が低い」と判断してしまうことがある。</p>
+    </div>
+  <div style="background:#f3e5f5;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#7b1fa2;margin-top:8px;">
+    <p>「私は宝石そのものではなく、私は宝石の力を持っている」。</p>
+    <p style="margin-top:4px;font-size:12px;color:var(--muted);">素材の力と自分を切り離せる瞬間が、メタ認知の始まりであり、自己受容の入口です。</p>
+  </div>
+</div>` },
+  '壬': { name:'河の力', html:`
+<div style="font-family:Noto Serif JP,serif;font-size:13px;line-height:1.8;color:var(--ink);">
+  <div style="background:linear-gradient(135deg,#64b5f6,#0d47a1);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:white;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+      <div style="font-size:22px;font-weight:bold;">🌊 河の力</div>
+      <div style="font-size:12px;letter-spacing:1px;opacity:0.9;">壬・水の陽</div>
+    </div>
+    <div style="font-size:12px;letter-spacing:2px;">自分の流れ・より大きな何かへ・障害を避けて進む・広け続ける・形にせず次へ</div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #1565c0;padding-left:8px;">■ この力の核心</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"><span style="background:#e3f2fd;border-radius:6px;padding:6px 10px;font-size:12px;">1. 自分の流れで生きていく力</span><span style="background:#e3f2fd;border-radius:6px;padding:6px 10px;font-size:12px;">2. より大きな何かへ向かっていく力</span><span style="background:#e3f2fd;border-radius:6px;padding:6px 10px;font-size:12px;">3. 動きながら障害を避けて進む力</span><span style="background:#e3f2fd;border-radius:6px;padding:6px 10px;font-size:12px;">4. 情報・知識・思考を広げ続ける力</span><span style="background:#e3f2fd;border-radius:6px;padding:6px 10px;font-size:12px;">5. 形にせず次へ次へと進んでいく力</span></div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #1565c0;padding-left:8px;">■ この力があるから自然と出てくる意志</p>
+  <div style="background:#e3f2fd;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+    <ul style="margin:0;padding-left:16px;line-height:2;"><li>自分のやり方・自分のペースで動いていたい</li><li>未知なる大きな何かへ、向かっていたい</li><li>考えて整理してからではなく、まず動いて、やりながら進み方を変えていきたい</li><li>可能性が広がる方、動きやすい方へ進みたい</li><li>情報や知識や思考を、広げていたい</li><li>情報・知識・思考を、自分の中でつなげたい</li><li>形にせず、次へ次へと進んでいきたい</li><li>止まらず、淀まず、動き続けていたい</li></ul>
+    <p style="color:#1565c0;font-size:12px;margin-top:8px;font-weight:bold;">河の力は、一貫性がないわけじゃない。形にできないわけじゃない。「いつか未知なる大きな何かへ辿り着くと信じて、自分の流れで動き続けていたい」だけ。</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e3f2fd;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">💻 仕事</p>
+      <p style="font-size:12px;">考えて整理してからより、まず動きながらやり方を変えていく方が自然に力が出やすい。やりにくい方法や障害は自由にかわしながら、自分のルートで進みやすい。情報や知識を広げながら、点と点がつながる瞬間が力の源になりやすい。</p>
+    </div>
+    <div style="flex:1;background:#fff8e1;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">🥂 人間関係</p>
+      <p style="font-size:12px;">知っていること、考えていることを話しながら発想がさらに広がりやすい。形にすることより次へ進むことを自然に選びやすいため、関係においても「まず動く・まずやってみる」が先に出やすい。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #1565c0;padding-left:8px;">■ A面・B面モード</p>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;border:1px solid #a5d6a7;">
+      <p style="font-weight:bold;color:#2e7d32;margin-bottom:6px;">A面｜素直モード</p>
+      <p style="font-size:12px;">自分のやり方・自分のペースで動いていて、そのままの自分で動けている。未知なる大きな何かへ向かいながら、その方向性が自分の軸になっている。やりにくい方法や障害は自由にかわしながら、自分のルートで進んでいる。</p>
+    </div>
+    <div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;border:1px solid #f48fb1;">
+      <p style="font-weight:bold;color:#c62828;margin-bottom:6px;">B面｜武装モード</p>
+      <p style="font-size:12px;">「自分の流れで動き続けたい」が「止めらたくない」「可能性を一つに決めてはいけない」に変わっていく。向き合うことへの恐怖で言い訳しながら流れ続ける状態。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #1565c0;padding-left:8px;">■ B面武装モードパターン</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;">
+    <p style="color:#c62828;">B面は悪いことじゃない。今までの使い方では通用しなくなってきたサイン。器が広がっていく、次のフェーズへ向かっている大切なプロセス。</p>
+  </div>
+  
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">🏛️ 理論武装型</p>
+      <p style="font-size:12px;">あらゆる情報・知識・可能性を広げてきた自負が「私の方が広く見えている」という鎧になる。「これだけ広く情報を集めてきたんだから、私の方が見えている」と自分の視野を正解にして、「あなたはその情報しか知らないの？」「その可能性しか見えていないの？」と相手の視野の狭さを無効化しやすくなる。</p>
+      
+    </div>
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">▪️ 回避型</p>
+      <p style="font-size:12px;">形にしろ、まとめろ、向き合えと言われる場面から、言い訳をしながら逃げ回る。「まだ情報が足りない」「タイミングじゃない」「もう少し準備してから」と言い訳して先延ばしにして、結局何もしない。</p>
+      <p style='font-size:11px;color:var(--muted);margin-top:6px;border-top:1px solid #eee;padding-top:6px;'>事例：「話を広げ続けることで本題から自然に遠ざかり、向き合わないまま時間が過ぎる」ことがある。やっているフリをしながら、本当に向き合うべきことからずっと逃げ続けていることに、気づかないことがある。</p>
+    </div>
+  <div style="background:#e3f2fd;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#1565c0;margin-top:8px;">
+    <p>「私は河そのものではなく、私は河の力を持っている」。</p>
+    <p style="margin-top:4px;font-size:12px;color:var(--muted);">素材の力と自分を切り離せる瞬間が、メタ認知の始まりであり、自己受容の入口です。</p>
+  </div>
+</div>` },
+  '癸': { name:'霧雨の力', html:`
+<div style="font-family:Noto Serif JP,serif;font-size:13px;line-height:1.8;color:var(--ink);">
+  <div style="background:linear-gradient(135deg,#9fa8da,#283593);border-radius:8px;padding:12px 16px;margin-bottom:16px;color:white;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+      <div style="font-size:22px;font-weight:bold;">🌧️ 霧雨の力</div>
+      <div style="font-size:12px;letter-spacing:1px;opacity:0.9;">癸・水の陰</div>
+    </div>
+    <div style="font-size:12px;letter-spacing:2px;">無数の感覚を感じ取る・言語化前を察する・前提を見る・そもそもをほどく・ヒントを置く</div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #303f9f;padding-left:8px;">■ この力の核心</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"><span style="background:#e8eaf6;border-radius:6px;padding:6px 10px;font-size:12px;">1. 無数の感覚・気配・感情を全体的に感じ取り続ける力</span><span style="background:#e8eaf6;border-radius:6px;padding:6px 10px;font-size:12px;">2. 言語化になる前の感情や感覚を深く察する力</span><span style="background:#e8eaf6;border-radius:6px;padding:6px 10px;font-size:12px;">3. その言葉がなぜ出たか、前提を見ていく力</span><span style="background:#e8eaf6;border-radius:6px;padding:6px 10px;font-size:12px;">4. 物事の「なぜそうなのか」前提や経緯をほどいていく力</span><span style="background:#e8eaf6;border-radius:6px;padding:6px 10px;font-size:12px;">5. 核心を直接言わず気づきになる言葉をふわっと置いていく力</span></div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #303f9f;padding-left:8px;">■ この力があるから自然と出てくる意志</p>
+  <div style="background:#e8eaf6;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+    <ul style="margin:0;padding-left:16px;line-height:2;"><li>場の全体的な空気や人の気配、感覚を、感じ取っていたい</li><li>目の前の人の、言葉になる前の本音や感覚を察していたい</li><li>自分の中にある、まだ言葉になっていない感覚も大切にしたい</li><li>「なぜそう言ったのか」その奥にある前提を、見ていきたい</li><li>当たり前になっていることの「そもそも」を、ほどいていきたい</li><li>物事の前提や経緯がほどけて、その人や物事の本来の状態を知りたい</li><li>答えは相手の中にあると信じて、ヒントになる言葉をそっと置いていたい</li></ul>
+    <p style="color:#303f9f;font-size:12px;margin-top:8px;font-weight:bold;">霧雨の力は、察しすぎているわけじゃない。暖昧にしているわけじゃない。「言葉になる前の感覚を感じ取りながら、前提をほどいて、その人や物事の本来の状態を見ていたい」だけ。</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e3f2fd;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">💻 仕事</p>
+      <p style="font-size:12px;">「なぜそのやり方なのか」「なぜそのルールがあるのか」が自然と気になる。当たり前になっていることの「そもそも」に自然と意識が向いて、表面に出ている物事より、そこに至った背景や経緯の方が気になりやすい。</p>
+    </div>
+    <div style="flex:1;background:#fff8e1;border-radius:8px;padding:10px;">
+      <p style="font-weight:bold;margin-bottom:6px;">🥂 人間関係</p>
+      <p style="font-size:12px;">相手が言葉にしていない、相手自身も気づいていない感情や感覚が自然と感じられやすい。答えを押しつけるのではなく、相手が自分で辿り着けるような言葉を自然に選びやすい。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #303f9f;padding-left:8px;">■ A面・B面モード</p>
+  <div style="display:flex;gap:8px;margin-bottom:16px;">
+    <div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;border:1px solid #a5d6a7;">
+      <p style="font-weight:bold;color:#2e7d32;margin-bottom:6px;">A面｜素直モード</p>
+      <p style="font-size:12px;">場の空気や人の気配、感情の動きを全体的に感じ取りながら、それを自然に受け取っている。言葉の奥にある感情や背景を、理解するために見ている。答えは相手の中にあると信じながら、ヒントになる言葉を自然に置いていける。</p>
+    </div>
+    <div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;border:1px solid #f48fb1;">
+      <p style="font-weight:bold;color:#c62828;margin-bottom:6px;">B面｜武装モード</p>
+      <p style="font-size:12px;">「感じ取りたい」が「察してもらえないと自分がダメだ」「どうせ誰も本当のことを見てくれない」に変わっていく。察する力が自分を守るための被害妄想や回避に変わっていく状態。</p>
+    </div>
+  </div>
+  <p style="font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #303f9f;padding-left:8px;">■ B面武装モードパターン</p>
+  <div style="background:#fce4ec;border-radius:8px;padding:10px;margin-bottom:10px;font-size:12px;">
+    <p style="color:#c62828;">B面は悪いことじゃない。今までの使い方では通用しなくなってきたサイン。器が広がっていく、次のフェーズへ向かっている大切なプロセス。</p>
+  </div>
+  
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">🏛️ 理論武装型</p>
+      <p style="font-size:12px;">察する力や前提をほどいてきた自負が、「私だけが本当のことを見えている」という鎧になる。「これだけ深く察してきたんだから、私の方があの人のことが分かっている」と自分の感覚を正解にして、「あなたはその人の本音が見えていない」「表面しか見ていない」と相手の見方を無効化しやすくなる。</p>
+      
+    </div>
+    <div style="border:1px solid #e0e0e0;border-radius:8px;padding:10px;margin-bottom:8px;">
+      <p style="font-weight:bold;margin-bottom:4px;">😟 ネガティブ型</p>
+      <p style="font-size:12px;">察する力が高いからこそ、傷つく未来が先に見えてしまい、感じること自体が怖くなっていく。「どうせ察してもらえない」「どうせ気持ちを雑に扱われる」と、感じる前から先に結論を出す。前提をほどく力があるから「どうせこういう背景があってこうなる」と、希望を持つ前に諦めやすくなる。</p>
+      <p style='font-size:11px;color:var(--muted);margin-top:6px;border-top:1px solid #eee;padding-top:6px;'>事例：気づきになる言葉を置こうとすると「どうせこの人には分からない、察することができない」と先に見えて黙ってしまうことがある。「どうせ誰も私の本当の気持ちを見てくれない」が前提になって、自分の察する力ごと封印していくことがある。</p>
+    </div>
+  <div style="background:#e8eaf6;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#303f9f;margin-top:8px;">
+    <p>「私は河そのものではなく、私は霧雨の力を持っている」。</p>
+    <p style="margin-top:4px;font-size:12px;color:var(--muted);">素材の力と自分を切り離せる瞬間が、メタ認知の始まりであり、自己受容の入口です。</p>
+  </div>
+</div>` },
+};
+const SOZAI_BASE_URL = 'https://terarinn.github.io/hatirizu/';
+
+function openSozaiModal(kan) {
+  const data = SOZAI_IMAGES[kan];
+  if (!data) return;
+  document.getElementById('sozai-modal-title').textContent = '◈ ' + data.name + ' ◈';
+  let html = '';
+  if (data.html) {
+    html = data.html;
+  } else if (data.imgs) {
+    data.imgs.forEach(img => {
+      html += '<img src="' + SOZAI_BASE_URL + img + '" style="width:100%;margin-bottom:8px;border-radius:4px;">';
+    });
+  }
+  document.getElementById('sozai-modal-content').innerHTML = html;
+  document.getElementById('sozai-modal').style.display = 'flex';
+  document.getElementById('sozai-modal-inner').style.animation = 'slideDown 0.35s cubic-bezier(0.34,1.56,0.64,1) both';
+}
+
+function closeSozaiModal() {
+  const inner = document.getElementById('sozai-modal-inner');
+  inner.classList.add('closing');
+  setTimeout(() => {
+    document.getElementById('sozai-modal').style.display = 'none';
+    inner.classList.remove('closing');
+  }, 250);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const sm = document.getElementById('sozai-modal');
+  if (sm) sm.addEventListener('click', function(e) {
+    if (e.target === this) closeSozaiModal();
+  });
+});
+</script>
+
+
+<!-- 八理図モーダル -->
+<div id="haririzu-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:flex-start;justify-content:center;padding-top:40px;overflow:hidden;">
+  <div id="haririzu-modal-inner" style="background:white;border-radius:8px;padding:24px;max-width:420px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.3);margin:0 auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <p style="font-family:Shippori Mincho,serif;font-size:16px;color:var(--gold);letter-spacing:3px;">◈ 八理図とは ◈</p>
+      <button onclick="closeHaririzu()" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted);">×</button>
+    </div>
+    <div style="font-family:Noto Serif JP,serif;font-size:13px;line-height:2;color:var(--ink);">
+
+      <p style="text-align:center;font-size:14px;font-weight:bold;margin-bottom:16px;color:var(--gold);">
+        私たちは持ってきた素材の力を使って<br>
+        自分を作る、人生を作るクリエイター！
+      </p>
+
+      <p style="font-size:13px;font-weight:bold;margin-bottom:4px;">八理図とは</p>
+      <p style="margin-bottom:16px;">自分が生まれ持った「素材の力」を知るための図です。</p>
+
+      <p style="font-size:13px;font-weight:bold;color:var(--gold);margin-bottom:4px;">① 素材の力とは</p>
+      <p style="margin-bottom:16px;">
+        私たちは自然と同じような素材の力を持って生まれてきています。<br>
+        生年月日・時間・場所から算出される八つの文字（命式）が、あなたの素材の表です。<br>
+        その命式から自分が持ってきた個性たちを視える化した、八つの文字から自然の理を知る図なので八理図！<br>
+        みんな違う素材のバランスを持つ、唯一無二の存在です。
+      </p>
+
+      <p style="font-size:13px;font-weight:bold;color:var(--gold);margin-bottom:4px;">② 八理図は自己理解のためのツール</p>
+      <p style="margin-bottom:16px;">
+        自分ってこんな性格って思い込んでたり、分からなかったりしていませんか？<br>
+        素材の特徴やクセ・種類・量・モードを理解することで、<br>
+        強い性質、自然と出やすい力、無意識に出る事、葛藤になりやすい組み合わせ、持ってない感覚など、<br>
+        性格の問題ではなく、素材の力の構造として、自分がメタ認知できてきます。
+      </p>
+
+      <p style="font-size:13px;font-weight:bold;color:var(--gold);margin-bottom:4px;">③ あなたはクリエイター</p>
+      <p style="margin-bottom:8px;">
+        自分はクリアな中心の存在。素材を知って理解することで、見て、整えて、選べる視点に変わります。<br>
+        大運・年運で巡ってくる素材の影響・学びが分かり、今、自分に何が起きているのか、次にどうすればいいのかも見えてきます。<br>
+        自分で選び、使う、創る側になって、自分と人生をクリエイトしていきましょう！
+      </p>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- 素材モーダル -->
+<div id="sozai-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:flex-start;justify-content:center;padding-top:40px;overflow:hidden;">
+  <div id="sozai-modal-inner" style="background:white;border-radius:8px;padding:16px;max-width:420px;width:90%;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.3);margin:0 auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <p id="sozai-modal-title" style="font-family:Shippori Mincho,serif;font-size:16px;color:var(--gold);letter-spacing:3px;"></p>
+      <button onclick="closeSozaiModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted);">×</button>
+    </div>
+    <div id="sozai-modal-content"></div>
+  </div>
+</div>
+
+<!-- レベルモーダル -->
+<style>
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(-100%); opacity: 0; }
+}
+#level-modal-inner {
+  animation: slideDown 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+#level-modal-inner.closing {
+  animation: slideUp 0.25s ease-in both;
+}
+</style>
+<div id="level-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:flex-start;padding-top:40px;overflow:hidden;">
+  <div id="level-modal-inner" style="background:white;border-radius:8px;padding:24px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.3);margin:0 auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <p style="font-family:Shippori Mincho,serif;font-size:16px;color:var(--gold);letter-spacing:3px;">◈ レベル表 ◈</p>
+      <button onclick="closeLevelModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted);">×</button>
+    </div>
+    <div id="level-modal-content"></div>
+  </div>
+</div>
+</body>
+</html>
