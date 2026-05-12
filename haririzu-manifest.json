@@ -1,8 +1,8 @@
-{
-  "name": "八理図 命式鑑定",
-  "short_name": "八理図",
-  "description": "八理図で自分の素材の力を詳しく理解できる命式鑑定アプリです。",
-  "start_url": "./haririzu3_v63_77_v153.html",
+﻿{
+  "name": "蜈ｫ逅・峙 蜻ｽ蠑城荘螳・,
+  "short_name": "蜈ｫ逅・峙",
+  "description": "蜈ｫ逅・峙縺ｧ閾ｪ蛻・・邏譚舌・蜉帙ｒ隧ｳ縺励￥逅・ｧ｣縺ｧ縺阪ｋ蜻ｽ蠑城荘螳壹い繝励Μ縺ｧ縺吶・,
+  "start_url": "./haririzu3_v63_77_v156.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f7f4ee",
