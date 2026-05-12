@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>八理図 | 自分と人生を創る素材</title>
-<meta name="description" content="八理図は、生年月日・時刻・出生地から自分の中にある素材の力を読み解く、やさしく本格的な自己理解の鑑定です。">
+<meta name="description" content="八理図は、生年月日・時刻・出生地から自分が生まれ持つ素材の力を読み解く、自己理解の羅針盤です。">
 <meta property="og:title" content="八理図 | 自分と人生を創る素材">
 <meta property="og:description" content="自分の中にある10の素材の力を、かわいく深く読み解く八理図鑑定。">
 <meta property="og:type" content="website">
@@ -31,297 +31,216 @@ body {
   margin:0;
   color:var(--ink);
   background:
-    radial-gradient(circle at 15% 12%, rgba(255,255,255,.85), transparent 28%),
+    radial-gradient(circle at 15% 12%, rgba(255,255,255,.9), transparent 28%),
     radial-gradient(circle at 88% 9%, rgba(146,199,220,.22), transparent 24%),
-    linear-gradient(180deg,#fffaf0 0%,#f7efe0 58%,#eef6ee 100%);
-  font-family:'Noto Serif JP',serif;
+    linear-gradient(180deg,#fffaf0 0%,#f8eed8 45%,#fffaf0 100%);
+  font-family:"Noto Serif JP", serif;
 }
 a { color:inherit; }
 .site-header {
-  position:fixed;
+  position:sticky;
   top:0;
-  left:0;
-  right:0;
   z-index:10;
-  background:rgba(255,250,240,.82);
-  border-bottom:1px solid rgba(184,134,11,.18);
-  backdrop-filter:blur(14px);
+  background:rgba(255,250,240,.86);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
 }
 .nav {
-  width:min(1060px,100%);
+  max-width:1080px;
   margin:0 auto;
-  padding:10px 16px;
+  padding:12px 18px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:14px;
+  gap:16px;
 }
 .brand {
   display:flex;
   align-items:center;
   gap:10px;
   text-decoration:none;
-  min-width:0;
+  font-weight:700;
+  color:var(--gold);
+  letter-spacing:2px;
 }
 .brand img {
-  width:38px;
-  height:38px;
-  border-radius:10px;
-  box-shadow:0 6px 16px rgba(120,80,0,.18);
-}
-.brand-title {
-  font-family:'Kaisei Decol','Shippori Mincho',serif;
-  font-size:18px;
-  font-weight:700;
-  letter-spacing:.12em;
+  width:36px;
+  height:36px;
+  border-radius:8px;
 }
 .nav-actions {
   display:flex;
-  gap:8px;
   align-items:center;
+  gap:10px;
+  font-size:13px;
 }
 .nav-link {
-  display:inline-flex;
-  align-items:center;
-  min-height:36px;
-  padding:8px 12px;
-  border:1px solid var(--line);
-  border-radius:6px;
   text-decoration:none;
-  font-family:'Zen Maru Gothic',sans-serif;
+  padding:8px 10px;
+  border-radius:6px;
+  color:var(--muted);
   font-weight:700;
-  font-size:13px;
-  background:rgba(255,255,255,.56);
 }
 .nav-link.primary {
   color:white;
-  background:linear-gradient(135deg,#c48a00 0%,#e7bd45 52%,#b8860b 100%);
-  border-color:transparent;
-  text-shadow:0 1px 4px rgba(60,35,0,.58);
+  background:linear-gradient(135deg,#d6a30e,#b8860b);
+  box-shadow:0 4px 14px rgba(184,134,11,.28);
 }
 .hero {
-  min-height:100svh;
-  padding:86px 16px 34px;
-  display:grid;
-  place-items:center;
-  position:relative;
-  overflow:hidden;
-}
-.hero::before {
-  content:"";
-  position:absolute;
-  inset:auto -10% 0;
-  height:46%;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.55), transparent 58%),
-    linear-gradient(180deg, rgba(174,214,178,.25), rgba(102,166,112,.28));
-  border-radius:50% 50% 0 0 / 28% 28% 0 0;
+  min-height:calc(100vh - 64px);
+  display:flex;
+  align-items:center;
+  padding:46px 18px 34px;
 }
 .hero-inner {
-  width:min(1060px,100%);
-  position:relative;
-  min-height:calc(100svh - 130px);
-  display:grid;
-  place-items:center;
-}
-.hero-copy {
-  position:relative;
-  z-index:2;
-  max-width:760px;
+  width:min(1080px,100%);
   margin:0 auto;
-  padding:28px 0 245px;
-  text-align:center;
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:40px;
+  align-items:center;
 }
 .eyebrow {
   color:var(--gold);
-  font-size:13px;
-  letter-spacing:.35em;
-  margin:0 0 12px;
+  letter-spacing:5px;
+  font-size:15px;
   font-weight:700;
+  margin:0 0 14px;
 }
 h1 {
-  margin:0;
-  font-family:'Kaisei Decol','Shippori Mincho',serif;
-  font-size:clamp(54px,12vw,108px);
-  line-height:.98;
-  letter-spacing:.16em;
-  color:#21170d;
-  text-shadow:
-    -1px -1px 0 rgba(255,255,255,.88),
-     1px -1px 0 rgba(255,255,255,.88),
-    -1px  1px 0 rgba(255,255,255,.88),
-     1px  1px 0 rgba(255,255,255,.88),
-     0 8px 22px rgba(184,134,11,.22);
+  font-family:"Shippori Mincho", serif;
+  font-size:clamp(52px,9vw,104px);
+  line-height:1;
+  margin:0 0 18px;
+  letter-spacing:8px;
+  color:#1d1710;
+  text-shadow:4px 4px 0 rgba(184,134,11,.22), 0 0 24px rgba(255,255,255,.8);
 }
 .lead {
-  margin:18px 0 0;
-  font-size:clamp(18px,3.4vw,31px);
+  font-family:"Kaisei Decol", serif;
+  font-size:clamp(22px,4vw,38px);
   line-height:1.55;
-  letter-spacing:.08em;
-  font-weight:700;
+  margin:0 0 16px;
+  color:#49331d;
 }
 .sublead {
-  margin:14px 0 0;
+  max-width:560px;
   color:var(--muted);
-  font-size:15px;
-  line-height:1.9;
+  line-height:2;
+  margin:0 0 24px;
 }
 .cta-row {
-  margin-top:26px;
   display:flex;
   flex-wrap:wrap;
   gap:12px;
-  justify-content:center;
 }
 .btn {
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  min-height:48px;
-  padding:13px 18px;
+  min-height:44px;
+  padding:0 20px;
   border-radius:7px;
   text-decoration:none;
-  font-family:'Kaisei Decol','Shippori Mincho',serif;
   font-weight:700;
-  letter-spacing:.12em;
-  transition:transform .25s, box-shadow .25s;
+  letter-spacing:1px;
 }
-.btn:hover { transform:translateY(-2px) scale(1.02); }
 .btn-main {
   color:white;
-  background:linear-gradient(135deg,#c48a00 0%,#e7bd45 52%,#b8860b 100%);
-  box-shadow:0 9px 22px rgba(184,134,11,.26), inset 0 1px 0 rgba(255,255,255,.36);
-  text-shadow:
-    -1px -1px 1px rgba(60,35,0,.68),
-     1px -1px 1px rgba(60,35,0,.68),
-    -1px  1px 1px rgba(60,35,0,.68),
-     1px  1px 1px rgba(60,35,0,.68),
-     0 2px 5px rgba(60,35,0,.55);
+  background:linear-gradient(135deg,#d6a30e,#b8860b);
+  box-shadow:0 8px 22px rgba(184,134,11,.3);
 }
 .btn-soft {
-  color:#7a5405;
-  background:rgba(255,255,255,.72);
   border:1px solid var(--line);
+  background:rgba(255,255,255,.62);
+  color:var(--gold);
 }
 .hero-art {
-  position:absolute;
-  inset:0;
-  z-index:1;
-  pointer-events:none;
+  min-height:460px;
+  position:relative;
 }
 .sun-card {
   position:absolute;
-  left:max(0px, calc(50% - 480px));
-  right:max(0px, calc(50% - 480px));
-  top:308px;
-  bottom:0;
-  border-radius:44% 44% 0 0 / 22% 22% 0 0;
+  inset:46px 28px 22px;
+  border-radius:50%;
   background:
-    radial-gradient(circle at 50% 38%, rgba(255,255,255,.76), rgba(255,245,205,.44) 36%, rgba(240,190,54,.26) 70%, rgba(255,255,255,0) 100%),
-    linear-gradient(180deg,rgba(255,255,255,.36),rgba(255,255,255,.12));
-  border:0;
-  box-shadow:none;
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.95),rgba(255,245,175,.7) 28%,rgba(223,175,38,.2) 58%,transparent 61%),
+    linear-gradient(135deg,rgba(255,255,255,.4),rgba(255,214,84,.38));
+  border:10px solid rgba(255,255,255,.78);
+  box-shadow:0 16px 40px rgba(184,134,11,.2);
 }
-.character {
-  position:absolute;
-  bottom:76px;
-  width:108px;
-  height:134px;
-  border-radius:48% 48% 38% 38%;
-  background:linear-gradient(180deg,#e7f7fb 0%,#86c9dc 100%);
-  box-shadow:0 12px 24px rgba(56,99,114,.18);
-}
-.character::before {
-  content:"";
-  position:absolute;
-  left:23px;
-  top:-42px;
-  width:62px;
-  height:62px;
-  border-radius:50%;
-  background:#f7dfc7;
-  box-shadow:inset 0 -4px 0 rgba(155,95,60,.12);
-}
-.character::after {
-  content:"";
-  position:absolute;
-  left:18px;
-  top:-45px;
-  width:72px;
-  height:30px;
-  border-radius:50% 50% 45% 45%;
-  background:#344451;
-  clip-path:polygon(0 55%,12% 16%,22% 56%,34% 8%,45% 58%,58% 12%,68% 58%,82% 18%,100% 58%,100% 100%,0 100%);
-}
-.character.left { left:22%; transform:rotate(-2deg); }
-.character.right {
-  right:18%;
-  background:linear-gradient(180deg,#fff 0%,#f0efe9 100%);
-}
-.face {
-  position:absolute;
-  left:39px;
-  top:-20px;
-  width:31px;
-  height:13px;
-  border-bottom:3px solid #2d3033;
-  border-radius:0 0 48% 48%;
-}
-.face::before,
-.face::after {
-  content:"";
-  position:absolute;
-  top:0;
-  width:5px;
-  height:5px;
-  border-radius:50%;
-  background:#2d3033;
-}
-.face::before { left:-10px; }
-.face::after { right:-10px; }
 .bubble {
   position:absolute;
   display:grid;
   place-items:center;
-  width:64px;
-  height:64px;
+  width:82px;
+  height:82px;
   border-radius:50%;
   color:white;
-  font-family:'Kaisei Decol',serif;
+  font-family:"Kaisei Decol", serif;
   font-size:24px;
   font-weight:700;
-  text-shadow:0 2px 5px rgba(35,24,0,.32);
-  box-shadow:0 11px 22px rgba(78,55,12,.18), inset 0 1px 0 rgba(255,255,255,.38);
+  text-shadow:0 2px 6px rgba(0,0,0,.34);
+  box-shadow:0 10px 20px rgba(0,0,0,.16), inset 0 2px 0 rgba(255,255,255,.35);
 }
-.bubble.small { width:50px; height:50px; font-size:20px; }
-.b1 { left:10%; top:118px; background:linear-gradient(135deg,#7cc779,#2e8e5c); }
-.b2 { left:29%; top:58px; background:linear-gradient(135deg,#f3e978,#c9a414); }
-.b3 { right:28%; top:102px; background:linear-gradient(135deg,#f0a7c2,#db5d86); }
-.b4 { right:8%; top:178px; background:linear-gradient(135deg,#87d6ee,#2e91c7); }
-.b5 { left:16%; bottom:140px; background:linear-gradient(135deg,#c69a7f,#7a4b34); }
-.b6 { right:32%; bottom:118px; background:linear-gradient(135deg,#ef9351,#b86618); }
-.b7 { right:12%; bottom:72px; background:linear-gradient(135deg,#8ecdf1,#2876bc); }
+.bubble.small {
+  width:68px;
+  height:68px;
+  font-size:20px;
+}
+.b1 { left:6%; top:72px; background:radial-gradient(circle at 30% 25%,#9de3a9,#2d8757); }
+.b2 { left:33%; top:24px; background:radial-gradient(circle at 30% 25%,#fff9c8,#b59a17); }
+.b3 { right:22%; top:78px; background:radial-gradient(circle at 30% 25%,#ffbdd2,#de5f8f); }
+.b4 { right:3%; top:170px; background:radial-gradient(circle at 30% 25%,#8fdcff,#2f80c7); }
+.b5 { left:20%; bottom:84px; background:radial-gradient(circle at 30% 25%,#d5a78c,#6e3f2c); }
+.b6 { right:34%; bottom:84px; background:radial-gradient(circle at 30% 25%,#f5bc77,#b76b19); }
+.b7 { right:4%; bottom:52px; background:radial-gradient(circle at 30% 25%,#cde7ff,#70b7d4); }
+.character {
+  position:absolute;
+  bottom:90px;
+  width:86px;
+  height:132px;
+  border-radius:42px 42px 28px 28px;
+  background:#f5f0e4;
+  box-shadow:0 12px 26px rgba(0,0,0,.14);
+}
+.character.left {
+  left:35%;
+  background:#bce0ee;
+}
+.character.right {
+  left:50%;
+  background:#f9f8f1;
+}
+.face {
+  position:absolute;
+  left:22px;
+  top:38px;
+  width:42px;
+  height:16px;
+  border-bottom:3px solid #2b2116;
+  border-radius:50%;
+}
 .section {
-  position:relative;
-  padding:72px 16px;
+  padding:56px 18px;
 }
 .section-inner {
-  width:min(1060px,100%);
+  width:min(980px,100%);
   margin:0 auto;
 }
 .section-title {
-  margin:0 0 10px;
-  font-family:'Kaisei Decol','Shippori Mincho',serif;
-  color:#7a5405;
-  font-size:clamp(24px,5vw,38px);
-  letter-spacing:.12em;
+  font-family:"Shippori Mincho", serif;
+  font-size:32px;
   text-align:center;
+  color:var(--gold);
+  letter-spacing:5px;
+  margin:0 0 16px;
 }
 .section-lead {
+  max-width:760px;
   margin:0 auto 28px;
-  max-width:720px;
   color:var(--muted);
-  line-height:1.9;
+  line-height:2;
   text-align:center;
 }
 .material-grid {
@@ -331,33 +250,25 @@ h1 {
 }
 .material {
   min-height:112px;
-  border:1px solid rgba(184,134,11,.22);
+  border:1px solid var(--line);
   border-radius:8px;
-  background:rgba(255,255,255,.7);
-  display:grid;
-  place-items:center;
-  gap:6px;
-  padding:14px 8px;
-  text-align:center;
-  box-shadow:0 8px 24px rgba(81,55,8,.08);
+  background:rgba(255,255,255,.65);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-weight:700;
 }
 .material-mark {
-  width:48px;
-  height:48px;
+  width:54px;
+  height:54px;
   border-radius:50%;
   display:grid;
   place-items:center;
   color:white;
-  font-family:'Kaisei Decol',serif;
-  font-size:21px;
-  font-weight:700;
-  text-shadow:0 2px 5px rgba(0,0,0,.25);
-}
-.material span:last-child {
-  font-family:'Zen Maru Gothic',sans-serif;
-  font-weight:700;
-  color:#4d3d2a;
-  font-size:13px;
+  text-shadow:0 2px 6px rgba(0,0,0,.28);
+  box-shadow:0 8px 18px rgba(0,0,0,.15);
 }
 .features {
   display:grid;
@@ -365,71 +276,43 @@ h1 {
   gap:16px;
 }
 .feature {
-  border:1px solid rgba(184,134,11,.22);
-  border-radius:8px;
-  background:rgba(255,255,255,.74);
+  min-height:170px;
   padding:22px;
-  box-shadow:0 8px 24px rgba(81,55,8,.08);
+  border-radius:8px;
+  background:rgba(255,255,255,.68);
+  border:1px solid var(--line);
 }
 .feature h3 {
   margin:0 0 10px;
-  font-family:'Kaisei Decol',serif;
-  color:#7a5405;
-  letter-spacing:.08em;
+  color:var(--gold);
   font-size:18px;
 }
 .feature p {
   margin:0;
+  line-height:1.9;
   color:var(--muted);
-  line-height:1.8;
-  font-size:14px;
 }
 .final {
-  padding:72px 16px 90px;
+  padding:62px 18px 72px;
   text-align:center;
-  background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.68));
 }
-.final .btn { margin-top:20px; }
 .footer {
-  padding:20px 16px 28px;
-  color:#8c7a5d;
+  padding:28px 18px;
   text-align:center;
-  font-size:12px;
+  color:var(--muted);
+  border-top:1px solid var(--line);
 }
-@media (max-width: 840px) {
-  .hero { padding-top:76px; min-height:auto; }
-  .hero-inner { min-height:760px; }
-  .hero-copy { padding:8px 0 430px; }
-  h1 { letter-spacing:.11em; }
-  .sublead { font-size:14px; }
-  .sun-card { left:-10px; right:-10px; top:372px; bottom:0; }
-  .character { width:82px; height:106px; bottom:54px; }
-  .character::before { left:18px; top:-34px; width:48px; height:48px; }
-  .character::after { left:14px; top:-37px; width:56px; height:24px; }
-  .face { left:30px; top:-16px; width:24px; }
-  .character.left { left:22%; }
-  .character.right { right:18%; }
-  .bubble { width:50px; height:50px; font-size:19px; }
-  .bubble.small { width:42px; height:42px; font-size:17px; }
+@media (max-width:760px) {
+  .nav { align-items:flex-start; }
+  .nav-actions { display:none; }
+  .hero { min-height:auto; padding-top:36px; }
+  .hero-inner { grid-template-columns:1fr; gap:22px; }
+  .hero-art { min-height:360px; }
   .material-grid { grid-template-columns:repeat(2,1fr); }
   .features { grid-template-columns:1fr; }
-  .nav-link:not(.primary) { display:none; }
-}
-@media (max-width: 430px) {
-  .brand-title { font-size:16px; }
-  .nav { padding-inline:12px; }
-  .hero { padding-inline:12px; }
-  .btn { width:100%; }
-  .hero-inner { min-height:720px; }
-  .hero-copy { padding-bottom:392px; }
-  .sun-card { top:360px; }
-  .b1 { left:5%; top:92px; }
-  .b2 { left:30%; top:34px; }
-  .b3 { right:24%; top:72px; }
-  .b4 { right:2%; top:148px; }
-  .b5 { left:8%; bottom:108px; }
-  .b6 { right:34%; bottom:84px; }
-  .b7 { right:4%; bottom:52px; }
+  .bubble { width:66px; height:66px; font-size:20px; }
+  .bubble.small { width:58px; height:58px; font-size:18px; }
+  .character { transform:scale(.82); transform-origin:bottom center; }
 }
 </style>
 </head>
@@ -443,7 +326,7 @@ h1 {
     <div class="nav-actions">
       <a class="nav-link" href="#sozai">10素材</a>
       <a class="nav-link" href="#features">わかること</a>
-      <a class="nav-link primary" href="./haririzu3_v63_77_v153.html">鑑定へ</a>
+      <a class="nav-link primary" href="./haririzu3_v63_77_v156.html">鑑定へ</a>
     </div>
   </nav>
 </header>
@@ -460,7 +343,7 @@ h1 {
           かわいく見えて、中身は深い本格鑑定です。
         </p>
         <div class="cta-row">
-          <a class="btn btn-main" href="./haririzu3_v63_77_v153.html">八理図で鑑定する</a>
+          <a class="btn btn-main" href="./haririzu3_v63_77_v156.html">八理図で鑑定する</a>
           <a class="btn btn-soft" href="#sozai">素材を見てみる</a>
         </div>
       </div>
@@ -483,18 +366,21 @@ h1 {
   <section class="section" id="sozai">
     <div class="section-inner">
       <h2 class="section-title">10の素材</h2>
-      <p class="section-lead">八理図では、命式を自然の素材として見える化します。自分の力の出方、得意な流れ、人との違いがやさしく見えてきます。</p>
+      <p class="section-lead">
+        八理図では、命式を自然の素材として視える化します。
+        自分の力の出方、得意な流れ、人との違いがやさしく見えてきます。
+      </p>
       <div class="material-grid">
-        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#ff8b70,#e53935);">太</span><span>太陽</span></div>
-        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#ffb0cc,#de5f8f);">灯</span><span>灯火</span></div>
-        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#8ee3ff,#2f8fc7);">河</span><span>河</span></div>
-        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#c0edff,#67bdd4);">霧</span><span>霧雨</span></div>
         <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#7ad37b,#278852);">木</span><span>木</span></div>
         <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#bde970,#7ab832);">草</span><span>草花</span></div>
-        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#ead04a,#b59608);">宝</span><span>宝石</span></div>
-        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#d6be55,#987c06);">剣</span><span>剣</span></div>
+        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#ff8b70,#e53935);">陽</span><span>太陽</span></div>
+        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#ffb0cc,#de5f8f);">灯</span><span>灯火</span></div>
         <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#d0a383,#7c4e37);">山</span><span>山</span></div>
         <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#f0a05a,#b76b19);">畑</span><span>畑</span></div>
+        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#d6be55,#987c06);">剣</span><span>剣</span></div>
+        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#ead04a,#b59608);">宝</span><span>宝石</span></div>
+        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#8ee3ff,#2f8fc7);">河</span><span>河</span></div>
+        <div class="material"><span class="material-mark" style="background:linear-gradient(135deg,#c0edff,#67bdd4);">霧</span><span>霧雨</span></div>
       </div>
     </div>
   </section>
@@ -502,11 +388,13 @@ h1 {
   <section class="section" id="features">
     <div class="section-inner">
       <h2 class="section-title">鑑定でわかること</h2>
-      <p class="section-lead">まずは自分の素材を知ることから。さらに、気になる人との素材の力の違いも比較できます。</p>
+      <p class="section-lead">
+        まずは自分の素材を知ることから。さらに、気になる人との素材の力の違いも比較できます。
+      </p>
       <div class="features">
         <article class="feature">
           <h3>自分の素材</h3>
-          <p>生まれ持った力の出方を、八理図バブルで見える化します。</p>
+          <p>生まれ持った力の出方を、八理図バブルで視える化します。</p>
         </article>
         <article class="feature">
           <h3>人生の流れ</h3>
@@ -514,7 +402,7 @@ h1 {
         </article>
         <article class="feature">
           <h3>あの人との比較</h3>
-          <p>2人の素材バランスを並べて、違いと響き合いを見ます。</p>
+          <p>2人の素材バランスを並べて、響き合いを見ます。</p>
         </article>
       </div>
     </div>
@@ -523,8 +411,10 @@ h1 {
   <section class="final">
     <div class="section-inner">
       <h2 class="section-title">八理図をはじめる</h2>
-      <p class="section-lead">入力内容は鑑定結果の表示にのみ使用され、外部へ保存・送信されることはありません。</p>
-      <a class="btn btn-main" href="./haririzu3_v63_77_v153.html">八理図で鑑定する</a>
+      <p class="section-lead">
+        入力内容は鑑定結果の表示にのみ使用され、外部へ保存・送信されることはありません。
+      </p>
+      <a class="btn btn-main" href="./haririzu3_v63_77_v156.html">八理図で鑑定する</a>
     </div>
   </section>
 </main>
