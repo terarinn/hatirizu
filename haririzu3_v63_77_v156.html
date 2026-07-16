@@ -13,12 +13,12 @@
 <meta property="og:title" content="八理図 | 命式鑑定">
 <meta property="og:description" content="自分の素材の力が詳しく理解できる、八理図の命式鑑定アプリです。">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://terarinn.github.io/hatirizu/haririzu-icon-512.png">
+<meta property="og:image" content="https://terarinn.github.io/hatirizu/haririzu-icon-512-v157.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="manifest" href="haririzu-manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="haririzu-icon-192.png">
-<link rel="apple-touch-icon" sizes="192x192" href="haririzu-icon-192.png">
-<link rel="apple-touch-icon" sizes="512x512" href="haririzu-icon-512.png">
+<link rel="manifest" href="haririzu-manifest.json?v=157">
+<link rel="icon" type="image/png" sizes="192x192" href="haririzu-icon-192-v157.png">
+<link rel="apple-touch-icon" sizes="192x192" href="haririzu-icon-192-v157.png">
+<link rel="apple-touch-icon" sizes="512x512" href="haririzu-icon-512-v157.png">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Kaisei+Decol:wght@400;700&family=Shippori+Mincho:wght@400;700&family=Zen+Maru+Gothic:wght@400;700&family=Noto+Emoji&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -1838,6 +1838,16 @@ function initPartnerDateTimeSelects() {
   fillNumberSelect('partner-day', 1, 31, '日', false);
   fillNumberSelect('partner-hour', 0, 23, '時', false);
   fillNumberSelect('partner-min', 0, 59, '分', true);
+  const partnerHourSel = document.getElementById('partner-hour');
+  const partnerMinSel = document.getElementById('partner-min');
+  if (partnerHourSel && partnerHourSel.options[0]?.value !== '') {
+    partnerHourSel.insertBefore(new Option('時', ''), partnerHourSel.firstChild);
+    partnerHourSel.value = '';
+  }
+  if (partnerMinSel && partnerMinSel.options[0]?.value !== '') {
+    partnerMinSel.insertBefore(new Option('分', ''), partnerMinSel.firstChild);
+    partnerMinSel.value = '';
+  }
 }
 
 // パートナーの都道府県selectを初期化（あなた様と同じ内容をコピー）
@@ -2119,9 +2129,11 @@ function calcPartner() {
   const py = parseInt(document.getElementById('partner-year').value);
   const pm = parseInt(document.getElementById('partner-month').value);
   const pd = parseInt(document.getElementById('partner-day').value);
-  const timeUnknown = document.getElementById('partner-time-unknown').checked;
-  const ph = timeUnknown ? 12 : (parseInt(document.getElementById('partner-hour').value) || 0);
-  const pmin = timeUnknown ? 0 : (parseInt(document.getElementById('partner-min').value) || 0);
+  const partnerHourRaw = document.getElementById('partner-hour').value;
+  const partnerMinRaw = document.getElementById('partner-min').value;
+  const timeUnknown = document.getElementById('partner-time-unknown').checked || partnerHourRaw === '' || partnerMinRaw === '';
+  const ph = timeUnknown ? 12 : parseInt(partnerHourRaw);
+  const pmin = timeUnknown ? 0 : parseInt(partnerMinRaw);
 
   if (!py || !pm || !pd) {
     alert('パートナー様の生年月日を入力してください');
@@ -4083,9 +4095,9 @@ function calculate() {
   if (dVal < 1 || dVal > 31) { errEl.textContent='日は1〜31で入力してください'; errEl.style.display='block'; return; }
 
   const y = yVal, m = mVal, d = dVal;
-  const timeUnknown = document.getElementById('time-unknown').checked;
-  const hourRaw = (!timeUnknown && birthH !== '') ? parseInt(birthH) : 12;
-  const minRaw  = (!timeUnknown && birthMin2 !== '') ? parseInt(birthMin2) : 0;
+  const timeUnknown = document.getElementById('time-unknown').checked || birthH === '' || birthMin2 === '';
+  const hourRaw = timeUnknown ? 12 : parseInt(birthH);
+  const minRaw  = timeUnknown ? 0 : parseInt(birthMin2);
 
   // 視太陽時補正
   const longitude = parseFloat(document.getElementById('prefecture').value) || 135.0;
@@ -4635,12 +4647,9 @@ function calcDaun(birthY, birthM, birthD, birthHour, birthMin, gender, yearKanId
     // 節入り日時をbirthと比較（日+時+分で比較）
     const sDay = s[2], sHour = s[3], sMin = s[4];
     const sY = s[0], sM = s[1];
-    // 年月日時分を数値化して比較
-    const sVal = sY * 100000000 + sM * 1000000 + sDay * 10000 + sHour * 100 + sMin;
-    const bVal = birthY * 100000000 + birthM * 1000000 + birthD * 10000 + birthHour * 60 + birthMin;
-    // 実際の分数で計算
-    const sMinAbs = sY * 525960 + sM * 43800 + sDay * 1440 + sHour * 60 + sMin;
-    const bMinAbs = birthY * 525960 + birthM * 43800 + birthD * 1440 + birthHour * 60 + birthMin;
+    // 実際の日付差で計算する。平均月換算だと月またぎで数時間〜十数時間ずれる。
+    const sMinAbs = toJD(sY, sM, sDay) * 1440 + sHour * 60 + sMin;
+    const bMinAbs = toJD(birthY, birthM, birthD) * 1440 + birthHour * 60 + birthMin;
     if (sMinAbs <= bMinAbs) {
       if (!prevSetsu || sMinAbs > prevSetsu.minAbs) {
         prevSetsu = { data: s, minAbs: sMinAbs };
@@ -4654,7 +4663,7 @@ function calcDaun(birthY, birthM, birthD, birthHour, birthMin, gender, yearKanId
 
   if (!prevSetsu || !nextSetsu) return;
 
-  const bMinAbs = birthY * 525960 + birthM * 43800 + birthD * 1440 + birthHour * 60 + birthMin;
+  const bMinAbs = toJD(birthY, birthM, birthD) * 1440 + birthHour * 60 + birthMin;
 
   // 日数差を計算
   let diffMin;
@@ -4673,9 +4682,10 @@ function calcDaun(birthY, birthM, birthD, birthHour, birthMin, gender, yearKanId
   const ritsunD = Math.round((ritsunMonthTotal - ritsunM) * 30);
   const ritsunDDisplay = ritsunD >= 30 ? 29 : ritsunD;
 
-  // 立運の年
-  const startYear = birthY + ritsunY + (birthM + ritsunM > 12 ? 1 : 0);
-  const startMonth = ((birthM + ritsunM - 1) % 12) + 1;
+  // 立運の開始年月。年齢の「年」も含めて出生年月に足す。
+  const startTotalMonths = birthY * 12 + (birthM - 1) + ritsunY * 12 + ritsunM;
+  const startYear = Math.floor(startTotalMonths / 12);
+  const startMonth = (startTotalMonths % 12) + 1;
 
   // 月柱の干支インデックスから大運を計算
   const monthKanIdx = pillars[2].kan; // 月柱天干
@@ -4693,8 +4703,10 @@ function calcDaun(birthY, birthM, birthD, birthHour, birthMin, gender, yearKanId
       shiIdx = ((monthShiIdx - i) % 12 + 12) % 12;
     }
     const age = ritsunY + (i - 1) * 10;
-    const year = birthY + age;
-    daunList.push({ kanIdx, shiIdx, age, year, startMonth });
+    const rowTotalMonths = startTotalMonths + (i - 1) * 120;
+    const year = Math.floor(rowTotalMonths / 12);
+    const month = (rowTotalMonths % 12) + 1;
+    daunList.push({ kanIdx, shiIdx, age, year, month });
   }
 
   // 大運セクション描画
@@ -4746,7 +4758,7 @@ function calcDaun(birthY, birthM, birthD, birthHour, birthMin, gender, yearKanId
     const ageStr = (d.age === 0 && ritsunY === 0)
       ? ritsunM + 'ヶ月' + ritsunDayStr
       : d.age + '歳' + ritsunM + 'ヶ月' + ritsunDayStr;
-    const yearMonthStr = d.year + '年' + ritsunM + '月';
+    const yearMonthStr = d.year + '年' + d.month + '月';
 
     const isFirst = !firstRendered;
     firstRendered = true;
@@ -5717,7 +5729,7 @@ const SOZAI_IMAGES = {
       <p style='font-size:11px;color:var(--muted);margin-top:6px;border-top:1px solid #eee;padding-top:6px;'>事例：気づきになる言葉を置こうとすると「どうせこの人には分からない、察することができない」と先に見えて黙ってしまうことがある。「どうせ誰も私の本当の気持ちを見てくれない」が前提になって、自分の察する力ごと封印していくことがある。</p>
     </div>
   <div style="background:#e8f4f8;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#303f9f;margin-top:8px;">
-    <p>「私は河そのものではなく、私は霧雨の力を持っている」。</p>
+    <p>「私は霧雨そのものではなく、私は霧雨の力を持っている」。</p>
     <p style="margin-top:4px;font-size:12px;color:var(--muted);">素材の力と自分を切り離せる瞬間が、メタ認知の始まりであり、自己受容の入口です。</p>
   </div>
 </div>` },
